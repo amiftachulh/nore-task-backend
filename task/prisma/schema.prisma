@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model kategori_task {
+  id         String @id @default(uuid())
+  nama       String
+  project_id String
+  index      Int
+  task       task[]
+}
+
+model task {
+  id               String        @id @default(uuid())
+  nama             String
+  kategori_task    kategori_task @relation(fields: [kategori_task_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  kategori_task_id String
+  kebutuhan        String        @db.Text
+  prioritas        String
+  attachment       String
+  index            Int
+  subtask          subtask[]
+}
+
+model subtask {
+  id         String  @id @default(uuid())
+  task       task    @relation(fields: [task_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  task_id    String
+  user_id    String?
+  keterangan String
+  poin       Int     @default(1)
+}
