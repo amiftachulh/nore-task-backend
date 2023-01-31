@@ -31,11 +31,13 @@ export function validate(schema: AnyZodObject) {
 export function authenticate() {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log(req.hostname);
       // extract token from header
       const header = req.header("Authorization");
       if (!header)
         return res.status(401).send("No authorization header found!");
       const token = header.replace("Bearer ", "");
+      if (token === config.auth.serviceToken) return next();
       if (!token) return res.status(401).send("Invalid authorization header!");
 
       // verify and decode jwt token
@@ -54,7 +56,7 @@ export function authenticate() {
           role: true,
         },
       });
-      if (user === null) {
+      if (!user) {
         return res
           .status(404)
           .send(`User with id ${verifiedPayload.id} not found!`);

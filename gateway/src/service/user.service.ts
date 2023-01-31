@@ -57,11 +57,11 @@ export async function deleteUserById(
   userId: string
 ): Promise<UserReturn | null> {
   try {
-    const deletedUser = (await prisma.user.delete({
+    const user = (await prisma.user.delete({
       where: { id: userId },
     })) as UserReturn;
     await axios.patch(`${config.service.task}/api/subtask/null-user/${userId}`);
-    return deletedUser;
+    return user;
   } catch (error) {
     return null;
   }

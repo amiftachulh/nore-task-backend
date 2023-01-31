@@ -4,16 +4,17 @@ dotenv.config();
 
 const config = {
   server: {
-    host: process.env.HOST || "http://localhost",
-    port: process.env.PORT || 5000,
+    host: process.env.HOST,
+    port: process.env.PORT,
   },
   auth: {
-    accessToken: process.env.ACCESS_TOKEN_SECRET || "secret",
-    refreshToken: process.env.REFRESH_TOKEN_SECRET || "secret",
+    accessToken: process.env.ACCESS_TOKEN_SECRET,
+    refreshToken: process.env.REFRESH_TOKEN_SECRET,
+    serviceToken: process.env.SERVICE_TOKEN_SECRET,
   },
   service: {
-    main: process.env.MAIN_SERVICE_URL || "http://localhost:5001",
-    task: process.env.TASK_SERVICE_URL || "http://localhost:5002",
+    main: process.env.MAIN_SERVICE_URL,
+    task: process.env.TASK_SERVICE_URL,
   },
 };
 

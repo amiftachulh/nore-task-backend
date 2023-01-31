@@ -16,4 +16,4 @@ app.use("/api", checkDbConnection(), indexRouter);
 const host = config.server.host;
 const port = config.server.port;
 
-app.listen(port, () => console.log(`Proxy listening to ${host}:${port}`));
+app.listen(port, () => console.log(`Gateway is listening to ${host}:${port}`));

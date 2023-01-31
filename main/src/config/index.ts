@@ -4,11 +4,11 @@ dotenv.config();
 
 const config = {
   server: {
-    host: process.env.HOST || "http://localhost",
-    port: process.env.PORT || 5001,
+    host: process.env.HOST,
+    port: process.env.PORT,
   },
   api: {
-    task: process.env.TASK_API || "http://localhost:5002",
+    task: process.env.TASK_API,
   },
 };
 

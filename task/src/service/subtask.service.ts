@@ -1,10 +1,17 @@
 import { prisma } from "../db/client";
 import { SubtaskSchema } from "../schema/subtask.schema";
+import config from "../config";
+import axios from "axios";
 
 export async function createSubtask(
   payload: SubtaskSchema
 ): Promise<SubtaskSchema | null> {
   try {
+    await axios.get(`${config.api.gateway}/user/${payload.user_id}`, {
+      headers: {
+        Authorization: `Bearer ${config.auth.serviceToken}`,
+      },
+    });
     return (await prisma.subtask.create({
       data: payload,
     })) as SubtaskSchema;
@@ -39,6 +46,7 @@ export async function updateSubtaskById(
   payload: SubtaskSchema
 ): Promise<SubtaskSchema | null> {
   try {
+    await axios.get(`${config.api.gateway}/user/${payload.user_id}`);
     return (await prisma.subtask.update({
       where: { id: subtaskId },
       data: payload,

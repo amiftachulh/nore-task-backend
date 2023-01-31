@@ -4,17 +4,20 @@ import {
   KategoriTaskSchema,
   KategoriTaskUpdate,
 } from "../schema/kategori-task.schema";
+import config from "../config";
+import axios from "axios";
 
 export async function createKategoriTask(
   payload: KategoriTaskSchema
 ): Promise<KategoriTaskSchema | null> {
-  const kategoriTask = await prisma.kategori_task.aggregate({
-    where: { project_id: payload.project_id },
-    _max: { index: true },
-  });
-  const index =
-    kategoriTask._max.index !== null ? kategoriTask._max.index + 1 : 0;
   try {
+    await axios.get(`${config.api.main}/project/${payload.project_id}`);
+    const kategoriTask = await prisma.kategori_task.aggregate({
+      where: { project_id: payload.project_id },
+      _max: { index: true },
+    });
+    const index =
+      kategoriTask._max.index !== null ? kategoriTask._max.index + 1 : 0;
     return await prisma.kategori_task.create({
       data: { ...payload, index: index },
     });
