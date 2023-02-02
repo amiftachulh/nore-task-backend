@@ -31,7 +31,6 @@ export function validate(schema: AnyZodObject) {
 export function authenticate() {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log(req.hostname);
       // extract token from header
       const header = req.header("Authorization");
       if (!header)
@@ -88,6 +87,18 @@ export function checkIfAdminOrProjectManager() {
     if (
       user.role_id !== null &&
       (user.role.nama === "Admin" || user.role.nama === "Project Manager")
+    )
+      return next();
+    return res.sendStatus(401);
+  };
+}
+
+export function changePasswordAuth() {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const user = (req as AuthorizedRequest).user;
+    if (
+      (user.role_id !== null && user.role.nama === "Admin") ||
+      user.id === req.body.id
     )
       return next();
     return res.sendStatus(401);

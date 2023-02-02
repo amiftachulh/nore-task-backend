@@ -53,6 +53,21 @@ export async function updateUserById(
   }
 }
 
+export async function updatePassword(
+  userId: string,
+  password: string
+): Promise<any | null> {
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+  } catch (error) {
+    return null;
+  }
+}
+
 export async function deleteUserById(
   userId: string
 ): Promise<UserReturn | null> {

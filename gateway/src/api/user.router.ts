@@ -1,12 +1,17 @@
 import { Router, Request, Response } from "express";
 import { userSchema, UserSchema } from "../schema/user.schema";
-import { validate } from "./middleware";
+import { changePasswordAuth, validate } from "./middleware";
 import {
   getAllUsers,
   getUserById,
   updateUserById,
   deleteUserById,
+  updatePassword,
 } from "../service/user.service";
+import {
+  ChangePasswordSchema,
+  changePasswordSchema,
+} from "../schema/auth.schema";
 
 export const userRouter = Router();
 
@@ -22,6 +27,18 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
   if (!user) return res.sendStatus(404);
   return res.status(200).send(user);
 });
+
+userRouter.patch(
+  "/change-password",
+  validate(changePasswordSchema),
+  changePasswordAuth(),
+  async (req: Request, res: Response) => {
+    const { id, password } = req.body as ChangePasswordSchema;
+    const user = await updatePassword(id, password);
+    if (!user) return res.sendStatus(400);
+    return res.sendStatus(200);
+  }
+);
 
 userRouter.patch(
   "/:id",
