@@ -100,6 +100,10 @@ export async function deleteKategoriTaskById(
 export async function deleteKategoriTaskByProjectId(
   projectId: string
 ): Promise<boolean> {
+  const kategoriTask = await prisma.kategori_task.findFirst({
+    where: { project_id: projectId },
+  });
+  if (!kategoriTask) return true;
   try {
     await prisma.kategori_task.deleteMany({
       where: { project_id: projectId },

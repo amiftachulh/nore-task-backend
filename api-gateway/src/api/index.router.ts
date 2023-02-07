@@ -15,13 +15,12 @@ const routes = [
   },
   {
     path: ["/kategori-task", "/task", "/subtask"],
-    auth: true,
     target: config.service.task,
   },
 ];
 
 routes.forEach(route => {
-  const { path, auth, ...options } = route;
+  const { path, ...options } = route;
   indexRouter.use(
     path,
     createProxyMiddleware({
