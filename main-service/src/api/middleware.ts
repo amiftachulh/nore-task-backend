@@ -33,6 +33,7 @@ export function authenticate() {
     if (!header) return res.status(401).send("No authorization header found!");
     const token = header.replace("Bearer ", "");
     if (!token) return res.status(401).send("Invalid authorization header!");
+    if (token === config.auth.serviceToken) return next();
     try {
       const response = await axios.get(`${config.api.auth}/auth`, {
         headers: {
