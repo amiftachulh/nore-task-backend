@@ -31,7 +31,7 @@ export async function getAccess(payload: LoginSchema): Promise<any | null> {
   });
   const userWithoutPassword = await getUserById(user.id);
 
-  return { accessToken, refreshToken };
+  return { ...userWithoutPassword, accessToken, refreshToken };
 }
 
 export async function getNewAccessToken(

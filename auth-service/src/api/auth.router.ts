@@ -42,7 +42,7 @@ authRouter.post(
       secure: true,
     });
     delete user.refreshToken;
-    return res.status(200).send({ token: user.accessToken });
+    return res.status(200).send(user);
   }
 );
 
