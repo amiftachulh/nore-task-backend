@@ -36,13 +36,6 @@ subtaskRouter.get("/:id", async (req: Request, res: Response) => {
   return res.status(200).send(subtask);
 });
 
-subtaskRouter.patch("/null-user/:id", async (req: Request, res: Response) => {
-  const userId = req.params.id;
-  const subtask = await setNullSubtaskByUserId(userId);
-  if (!subtask) return res.sendStatus(400);
-  return res.sendStatus(200);
-});
-
 subtaskRouter.patch(
   "/:id",
   validate(subtaskSchema),

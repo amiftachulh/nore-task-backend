@@ -58,7 +58,7 @@ export async function deleteProjectById(
       where: { id: projectId },
     });
     await axios.delete(
-      `${config.api.task}/kategori-task/delete-project/${projectId}`,
+      `${config.api.task}/event/delete-kategori-task/${projectId}`,
       {
         headers: {
           Authorization: `Bearer ${config.auth.serviceToken}`,

@@ -66,16 +66,6 @@ kategoriTaskRouter.patch(
   }
 );
 
-kategoriTaskRouter.delete(
-  "/delete-project/:id",
-  async (req: Request, res: Response) => {
-    const projectId = req.params.id;
-    const kategoriTask = await deleteKategoriTaskByProjectId(projectId);
-    if (!kategoriTask) return res.sendStatus(400);
-    return res.sendStatus(200);
-  }
-);
-
 kategoriTaskRouter.delete("/:id", async (req: Request, res: Response) => {
   const kategoriTaskId = req.params.id;
   const kategoriTask = await deleteKategoriTaskById(kategoriTaskId);

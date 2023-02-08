@@ -11,11 +11,7 @@ export async function createKategoriTask(
   payload: KategoriTaskSchema
 ): Promise<KategoriTaskSchema | null> {
   try {
-    await axios.get(`${config.api.main}/project/${payload.project_id}`, {
-      headers: {
-        Authorization: `Bearer ${config.auth.serviceToken}`,
-      },
-    });
+    await axios.get(`${config.api.main}/event/project/${payload.project_id}`);
     const kategoriTask = await prisma.kategori_task.aggregate({
       where: { project_id: payload.project_id },
       _max: { index: true },

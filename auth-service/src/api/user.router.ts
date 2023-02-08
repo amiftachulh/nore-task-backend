@@ -38,10 +38,10 @@ userRouter.patch(
   validate(changePasswordSchema),
   changePasswordAuth(),
   async (req: Request, res: Response) => {
-    const { id, password } = req.body as ChangePasswordSchema;
-    const user = await updatePassword(id, password);
-    if (!user) return res.sendStatus(400);
-    return res.sendStatus(200);
+    const payload = req.body as ChangePasswordSchema;
+    const user = await updatePassword(payload);
+    if (user.err) return res.status(user.code).send(user.err);
+    return res.status(user.code).send("Password changed");
   }
 );
 

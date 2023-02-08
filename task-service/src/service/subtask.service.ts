@@ -7,11 +7,7 @@ export async function createSubtask(
   payload: SubtaskSchema
 ): Promise<SubtaskSchema | null> {
   try {
-    await axios.get(`${config.api.auth}/user/${payload.user_id}`, {
-      headers: {
-        Authorization: `Bearer ${config.auth.serviceToken}`,
-      },
-    });
+    await axios.get(`${config.api.auth}/event/user/${payload.user_id}`);
     return (await prisma.subtask.create({
       data: payload,
     })) as SubtaskSchema;
@@ -46,11 +42,7 @@ export async function updateSubtaskById(
   payload: SubtaskSchema
 ): Promise<SubtaskSchema | null> {
   try {
-    await axios.get(`${config.api.auth}/user/${payload.user_id}`, {
-      headers: {
-        Authorization: `Bearer ${config.auth.serviceToken}`,
-      },
-    });
+    await axios.get(`${config.api.auth}/event/user/${payload.user_id}`);
     return (await prisma.subtask.update({
       where: { id: subtaskId },
       data: payload,

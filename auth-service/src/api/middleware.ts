@@ -3,7 +3,7 @@ import { prisma } from "../db/client";
 import config from "../config";
 import jwt from "jsonwebtoken";
 import { AnyZodObject } from "zod";
-import { jwtPayloadSchema } from "../schema/auth.schema";
+import { ChangePasswordSchema, jwtPayloadSchema } from "../schema/auth.schema";
 
 export function checkDbConnection() {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -81,12 +81,9 @@ export function checkIfAdmin() {
 
 export function changePasswordAuth() {
   return (req: Request, res: Response, next: NextFunction) => {
+    const payload = req.body as ChangePasswordSchema;
     const user = (req as AuthorizedRequest).user;
-    if (
-      (user.role_id !== null && user.role.nama === "Admin") ||
-      user.id === req.body.id
-    )
-      return next();
+    if (user.role && user.id === payload.id) return next();
     return res.sendStatus(401);
   };
 }

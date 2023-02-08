@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AnyZodObject } from "zod";
 import { prisma } from "../db/client";
-import axios from "axios";
-import config from "../config";
 
 export function checkDbConnection() {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -27,36 +25,12 @@ export function validate(schema: AnyZodObject) {
   };
 }
 
-export function authenticate() {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    const header = req.header("Authorization");
-    if (!header) return res.status(401).send("No authorization header found!");
-    const token = header.replace("Bearer ", "");
-    if (!token) return res.status(401).send("Invalid authorization header!");
-    if (token === config.auth.serviceToken) return next();
-    try {
-      const response = await axios.get(`${config.api.auth}/auth`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const user = response.data;
-      // attach user to request object
-      (req as AuthorizedRequest).user = user;
-
-      return next();
-    } catch (error) {
-      return res.sendStatus(401);
-    }
-  };
-}
-
-export type AuthorizedRequest = Request & { user: any };
-
 export function checkIfAdmin() {
   return (req: Request, res: Response, next: NextFunction) => {
-    const user = (req as AuthorizedRequest).user;
+    const header = req.header("X-User");
+    if (!header) return res.sendStatus(401);
+    const user = JSON.parse(header);
     if (user.role !== null && user.role.nama === "Admin") return next();
-    return res.sendStatus(401);
+    return res.sendStatus(403);
   };
 }

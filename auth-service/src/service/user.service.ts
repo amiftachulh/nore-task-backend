@@ -7,6 +7,8 @@ import {
 } from "../schema/user.schema";
 import config from "../config";
 import axios from "axios";
+import { ChangePasswordSchema } from "../schema/auth.schema";
+import { ResponseService } from "../types";
 
 export async function registerUser(
   payload: UserSchema
@@ -65,17 +67,48 @@ export async function updateUserById(
 }
 
 export async function updatePassword(
-  userId: string,
-  password: string
-): Promise<any | null> {
+  payload: ChangePasswordSchema
+): Promise<ResponseService<any | null>> {
+  const { id, currentPassword, newPassword, confirmNewPassword } = payload;
+  const user = await prisma.user.findUnique({
+    where: { id: id },
+  });
+  if (!user)
+    return {
+      code: 404,
+      data: null,
+      err: "User not found!",
+    };
+  const compare = await bcrypt.compare(currentPassword, user.password);
+  if (!compare)
+    return {
+      code: 400,
+      data: null,
+      err: "Wrong password!",
+    };
+  if (newPassword !== confirmNewPassword)
+    return {
+      code: 400,
+      data: null,
+      err: "New password didn't match",
+    };
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    return await prisma.user.update({
-      where: { id: userId },
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const updatedUser = await prisma.user.update({
+      where: { id: id },
       data: { password: hashedPassword },
     });
+    return {
+      code: 200,
+      data: updatedUser,
+      err: null,
+    };
   } catch (error) {
-    return null;
+    return {
+      code: 400,
+      data: null,
+      err: error,
+    };
   }
 }
 
@@ -86,11 +119,7 @@ export async function deleteUserById(
     const user = (await prisma.user.delete({
       where: { id: userId },
     })) as UserReturn;
-    await axios.patch(`${config.api.task}/subtask/null-user/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${config.auth.serviceToken}`,
-      },
-    });
+    await axios.patch(`${config.api.task}/event/null-user/${userId}`);
     return user;
   } catch (error) {
     return null;
