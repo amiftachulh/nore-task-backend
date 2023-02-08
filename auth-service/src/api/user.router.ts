@@ -1,11 +1,11 @@
 import { Router, Request, Response } from "express";
+import { UserUpdateSchema, userUpdateSchema } from "../schema/user.schema";
 import {
-  userSchema,
-  UserSchema,
-  UserUpdateSchema,
-  userUpdateSchema,
-} from "../schema/user.schema";
-import { changePasswordAuth, validate } from "./middleware";
+  authenticate,
+  AuthorizedRequest,
+  changePasswordAuth,
+  validate,
+} from "./middleware";
 import {
   getAllUsers,
   getUserById,
@@ -24,6 +24,11 @@ userRouter.get("/", async (req: Request, res: Response) => {
   const users = await getAllUsers();
   if (!users) return res.sendStatus(404);
   return res.status(200).send(users);
+});
+
+userRouter.get("/me", authenticate(), async (req: Request, res: Response) => {
+  const user = (req as AuthorizedRequest).user;
+  return res.status(200).send(user);
 });
 
 userRouter.get("/:id", async (req: Request, res: Response) => {
