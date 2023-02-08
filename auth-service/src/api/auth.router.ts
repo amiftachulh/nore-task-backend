@@ -51,7 +51,7 @@ authRouter.get("/refresh", async (req: Request, res: Response) => {
   if (!refreshToken) return res.sendStatus(401);
   const token = await getNewAccessToken(refreshToken);
   if (!token) return res.sendStatus(403);
-  return res.status(200).send({ accessToken: token });
+  return res.status(200).send({ token });
 });
 
 authRouter.delete(
