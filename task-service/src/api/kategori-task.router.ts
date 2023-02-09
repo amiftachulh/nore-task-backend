@@ -13,8 +13,6 @@ import {
   updateKategoriTaskById,
   deleteKategoriTaskById,
   swapKategoriTask,
-  deleteKategoriTaskByProjectId,
-  getKategoriTaskByProjectId,
 } from "../service/kategori-task.service";
 import { BoardSchema, boardSchema } from "../schema/board.schema";
 
