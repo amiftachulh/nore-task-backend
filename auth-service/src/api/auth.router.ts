@@ -6,7 +6,6 @@ import {
   deleteRefreshToken,
   getAccess,
   getNewAccessToken,
-  verifyToken,
 } from "../service/auth.service";
 import { registerUser } from "../service/user.service";
 
@@ -49,9 +48,9 @@ authRouter.post(
 authRouter.get("/refresh", async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.sendStatus(401);
-  const token = await getNewAccessToken(refreshToken);
-  if (!token) return res.sendStatus(403);
-  return res.status(200).send({ token });
+  const user = await getNewAccessToken(refreshToken);
+  if (!user) return res.sendStatus(403);
+  return res.status(200).send(user);
 });
 
 authRouter.delete(

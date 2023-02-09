@@ -39,8 +39,10 @@ export async function getNewAccessToken(
 ): Promise<any | null> {
   const user = await prisma.user.findFirst({
     where: { refresh_token: refreshToken },
+    include: { role: true },
   });
   if (!user) return null;
+  const { password, refresh_token, role_id, ...userData } = user;
   const newAccessToken = jwt.verify(
     refreshToken,
     config.auth.refreshToken as string,
@@ -57,47 +59,7 @@ export async function getNewAccessToken(
       return accessToken;
     }
   );
-  return newAccessToken;
-}
-
-export async function verifyToken(
-  accessToken: string
-): Promise<ResponseService<any | null>> {
-  try {
-    const jwtPayload = jwt.verify(
-      accessToken,
-      config.auth.accessToken as string
-    );
-    const verifiedPayload = await jwtPayloadSchema.parseAsync(jwtPayload);
-    const user = await prisma.user.findUnique({
-      where: { id: verifiedPayload.id },
-      select: {
-        id: true,
-        nama_lengkap: true,
-        username: true,
-        nomor_hp: true,
-        divisi: true,
-        role: true,
-      },
-    });
-    if (!user)
-      return {
-        code: 404,
-        data: null,
-        err: "User not found.",
-      };
-    return {
-      code: 200,
-      data: user,
-      err: null,
-    };
-  } catch (error) {
-    return {
-      code: 401,
-      data: null,
-      err: error,
-    };
-  }
+  return { ...userData, accessToken: newAccessToken };
 }
 
 export async function deleteRefreshToken(
