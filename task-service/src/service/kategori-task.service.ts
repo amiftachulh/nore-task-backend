@@ -41,11 +41,11 @@ export async function getAllKategoriTasks(): Promise<any | null> {
   });
 }
 
-export async function getKategoriTaskById(
-  kategori_taskId: string
-): Promise<any | null> {
-  return await prisma.kategori_task.findUnique({
-    where: { id: kategori_taskId },
+export async function getKategoriTaskByProjectId(
+  projectId: string
+): Promise<Array<object>> {
+  return await prisma.kategori_task.findMany({
+    where: { project_id: projectId },
     select: kategoriTaskReturn,
   });
 }

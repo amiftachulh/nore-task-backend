@@ -9,11 +9,12 @@ import {
 import {
   createKategoriTask,
   getAllKategoriTasks,
-  getKategoriTaskById,
+  getKategoriTaskByProjectId,
   updateKategoriTaskById,
   deleteKategoriTaskById,
   swapKategoriTask,
   deleteKategoriTaskByProjectId,
+  getKategoriTaskByProjectId,
 } from "../service/kategori-task.service";
 import { BoardSchema, boardSchema } from "../schema/board.schema";
 
@@ -38,8 +39,8 @@ kategoriTaskRouter.get("/", async (req: Request, res: Response) => {
 
 kategoriTaskRouter.get("/:id", async (req: Request, res: Response) => {
   const kategoriTaskId = req.params.id;
-  const kategoriTask = await getKategoriTaskById(kategoriTaskId);
-  if (!kategoriTask) return res.sendStatus(404);
+  const kategoriTask = await getKategoriTaskByProjectId(kategoriTaskId);
+  if (!kategoriTask.length) return res.sendStatus(404);
   return res.status(200).send(kategoriTask);
 });
 
