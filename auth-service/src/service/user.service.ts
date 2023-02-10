@@ -50,8 +50,9 @@ export async function updateUserById(
   payload: UserUpdateSchema
 ): Promise<UserReturn | null> {
   try {
-    if (payload.password) {
-      const hashedPassword = await bcrypt.hash(payload.password, 10);
+    const { password, ...userData } = payload;
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
       return (await prisma.user.update({
         where: { id: userId },
         data: { ...payload, password: hashedPassword },
@@ -59,7 +60,7 @@ export async function updateUserById(
     }
     return (await prisma.user.update({
       where: { id: userId },
-      data: payload,
+      data: { ...userData },
     })) as UserReturn;
   } catch (error) {
     return null;
