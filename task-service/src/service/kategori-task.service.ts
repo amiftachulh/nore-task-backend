@@ -84,9 +84,13 @@ export async function swapKategoriTask(board: BoardSchema): Promise<boolean> {
 export async function deleteKategoriTaskById(
   kategori_taskId: string
 ): Promise<KategoriTaskSchema | null> {
-  return await prisma.kategori_task.delete({
-    where: { id: kategori_taskId },
-  });
+  try {
+    return await prisma.kategori_task.delete({
+      where: { id: kategori_taskId },
+    });
+  } catch (error) {
+    return null;
+  }
 }
 
 export async function deleteKategoriTaskByProjectId(
