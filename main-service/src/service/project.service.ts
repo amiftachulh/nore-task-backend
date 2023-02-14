@@ -54,9 +54,6 @@ export async function deleteProjectById(
   projectId: string
 ): Promise<any | null> {
   try {
-    const user = await prisma.project.delete({
-      where: { id: projectId },
-    });
     await axios.delete(
       `${config.api.task}/event/delete-kategori-task/${projectId}`,
       {
@@ -65,7 +62,9 @@ export async function deleteProjectById(
         },
       }
     );
-    return user;
+    return await prisma.project.delete({
+      where: { id: projectId },
+    });
   } catch (error) {
     return null;
   }

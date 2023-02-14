@@ -25,17 +25,3 @@ export function validate(schema: AnyZodObject) {
     }
   };
 }
-
-export function checkIfAdminOrProjectManager() {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const header = req.header("X-User");
-    if (!header) return res.sendStatus(401);
-    const user = JSON.parse(header) as User;
-    if (
-      user.role !== null &&
-      (user.role.nama === "Admin" || user.role.nama === "Project Manager")
-    )
-      return next();
-    return res.sendStatus(401);
-  };
-}

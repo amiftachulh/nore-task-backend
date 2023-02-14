@@ -9,14 +9,13 @@ import {
   deleteTaskById,
   swapTask,
 } from "../service/task.service";
-import { checkIfAdminOrProjectManager, validate } from "./middleware";
+import { validate } from "./middleware";
 
 export const taskRouter = Router();
 
 taskRouter.post(
   "/",
   validate(taskSchema),
-  checkIfAdminOrProjectManager(),
   async (req: Request, res: Response) => {
     const payload = req.body as TaskSchema;
     const task = await createTask(payload);
@@ -52,7 +51,6 @@ taskRouter.patch(
 taskRouter.patch(
   "/:id",
   validate(taskSchema),
-  checkIfAdminOrProjectManager(),
   async (req: Request, res: Response) => {
     const taskId = req.params.id;
     const payload = req.body as TaskSchema;
@@ -62,13 +60,9 @@ taskRouter.patch(
   }
 );
 
-taskRouter.delete(
-  "/:id",
-  checkIfAdminOrProjectManager(),
-  async (req: Request, res: Response) => {
-    const taskId = req.params.id;
-    const task = await deleteTaskById(taskId);
-    if (!task) return res.sendStatus(404);
-    return res.sendStatus(200);
-  }
-);
+taskRouter.delete("/:id", async (req: Request, res: Response) => {
+  const taskId = req.params.id;
+  const task = await deleteTaskById(taskId);
+  if (!task) return res.sendStatus(404);
+  return res.sendStatus(200);
+});
