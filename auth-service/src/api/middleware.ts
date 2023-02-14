@@ -4,6 +4,7 @@ import config from "../config";
 import jwt from "jsonwebtoken";
 import { AnyZodObject } from "zod";
 import { ChangePasswordSchema, jwtPayloadSchema } from "../schema/auth.schema";
+import { UserReturn } from "../schema/user.schema";
 
 export function checkDbConnection() {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -69,7 +70,7 @@ export function authenticate() {
   };
 }
 
-export type AuthorizedRequest = Request & { user: any };
+export type AuthorizedRequest = Request & { user: UserReturn };
 
 export function checkIfAdmin() {
   return (req: Request, res: Response, next: NextFunction) => {

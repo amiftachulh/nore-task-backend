@@ -1,6 +1,7 @@
 import { z } from "zod";
+import { user, role } from "@prisma/client";
 
-export const userSchema = z
+export const userCreate = z
   .object({
     nama_lengkap: z.string().min(1).max(60),
     username: z.string().min(4).max(30),
@@ -10,7 +11,7 @@ export const userSchema = z
   })
   .strict();
 
-export const userUpdateSchema = z
+export const userUpdate = z
   .object({
     nama_lengkap: z.string().min(1).max(60),
     username: z.string().min(4).max(30),
@@ -21,8 +22,10 @@ export const userUpdateSchema = z
   })
   .strict();
 
-export const userReturn = userUpdateSchema.omit({ password: true });
+export type UserCreate = z.infer<typeof userCreate>;
+export type UserUpdate = z.infer<typeof userUpdate>;
 
-export type UserSchema = z.infer<typeof userSchema>;
-export type UserUpdateSchema = z.infer<typeof userUpdateSchema>;
-export type UserReturn = z.infer<typeof userReturn>;
+type UserWithoutPassword = Omit<user, "password" | "role_id" | "refresh_token">;
+export type UserReturn = UserWithoutPassword & {
+  role: role | null;
+};

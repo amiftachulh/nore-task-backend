@@ -1,26 +1,21 @@
 import { prisma } from "../db/client";
 import bcrypt from "bcrypt";
-import {
-  UserSchema,
-  UserReturn,
-  UserUpdateSchema,
-} from "../schema/user.schema";
+import { UserCreate, UserReturn, UserUpdate } from "../schema/user.schema";
 import config from "../config";
 import axios from "axios";
 import { ChangePasswordSchema } from "../schema/auth.schema";
 import { ResponseService } from "../types";
+import { user } from "@prisma/client";
 
-export async function registerUser(
-  payload: UserSchema
-): Promise<UserReturn | null> {
+export async function registerUser(payload: UserCreate): Promise<any | null> {
   const user = await prisma.user.findMany({
     where: { username: payload.username },
   });
   if (user.length) return null;
   const hashedPassword = await bcrypt.hash(payload.password, 10);
-  return (await prisma.user.create({
+  return await prisma.user.create({
     data: { ...payload, password: hashedPassword },
-  })) as UserReturn;
+  });
 }
 
 export const omitUserPassword = {
@@ -32,13 +27,13 @@ export const omitUserPassword = {
   role: true,
 };
 
-export async function getAllUsers(): Promise<UserReturn[] | null> {
+export async function getAllUsers(): Promise<Array<UserReturn> | null> {
   return await prisma.user.findMany({
     select: omitUserPassword,
   });
 }
 
-export async function getUserById(userId: string): Promise<any | null> {
+export async function getUserById(userId: string): Promise<UserReturn | null> {
   return await prisma.user.findUnique({
     where: { id: userId },
     select: omitUserPassword,
@@ -47,21 +42,23 @@ export async function getUserById(userId: string): Promise<any | null> {
 
 export async function updateUserById(
   userId: string,
-  payload: UserUpdateSchema
+  payload: UserUpdate
 ): Promise<UserReturn | null> {
   try {
     const { password, ...userData } = payload;
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
-      return (await prisma.user.update({
+      return await prisma.user.update({
         where: { id: userId },
         data: { ...payload, password: hashedPassword },
-      })) as UserReturn;
+        select: omitUserPassword,
+      });
     }
-    return (await prisma.user.update({
+    return await prisma.user.update({
       where: { id: userId },
       data: { ...userData },
-    })) as UserReturn;
+      select: omitUserPassword,
+    });
   } catch (error) {
     return null;
   }
@@ -69,7 +66,7 @@ export async function updateUserById(
 
 export async function updatePassword(
   payload: ChangePasswordSchema
-): Promise<ResponseService<any | null>> {
+): Promise<ResponseService<UserReturn | null>> {
   const { id, currentPassword, newPassword, confirmNewPassword } = payload;
   const user = await prisma.user.findUnique({
     where: { id: id },
@@ -98,6 +95,7 @@ export async function updatePassword(
     const updatedUser = await prisma.user.update({
       where: { id: id },
       data: { password: hashedPassword },
+      select: omitUserPassword,
     });
     return {
       code: 200,
@@ -117,11 +115,11 @@ export async function deleteUserById(
   userId: string
 ): Promise<UserReturn | null> {
   try {
-    const user = (await prisma.user.delete({
-      where: { id: userId },
-    })) as UserReturn;
     await axios.patch(`${config.api.task}/event/null-user/${userId}`);
-    return user;
+    return await prisma.user.delete({
+      where: { id: userId },
+      select: omitUserPassword,
+    });
   } catch (error) {
     return null;
   }

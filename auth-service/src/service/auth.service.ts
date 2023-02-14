@@ -4,8 +4,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import config from "../config";
 import { getUserById } from "./user.service";
-import { ResponseService } from "../types";
-
+    
 export async function getAccess(payload: LoginSchema): Promise<any | null> {
   const user = await prisma.user.findUnique({
     where: { username: payload.username },

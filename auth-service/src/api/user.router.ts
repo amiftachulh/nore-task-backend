@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { UserUpdateSchema, userUpdateSchema } from "../schema/user.schema";
+import { UserUpdate, userUpdate } from "../schema/user.schema";
 import {
   authenticate,
   AuthorizedRequest,
@@ -52,10 +52,10 @@ userRouter.patch(
 
 userRouter.patch(
   "/:id",
-  validate(userUpdateSchema),
+  validate(userUpdate),
   async (req: Request, res: Response) => {
     const userId = req.params.id;
-    const payload = req.body as UserUpdateSchema;
+    const payload = req.body as UserUpdate;
     const user = await updateUserById(userId, payload);
     if (!user) return res.sendStatus(400);
     return res.sendStatus(200);
