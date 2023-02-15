@@ -38,7 +38,7 @@ authRouter.post(
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
       sameSite: "none",
-      // secure: true,
+      secure: true,
     });
     delete user.refreshToken;
     return res.status(200).send(user);
