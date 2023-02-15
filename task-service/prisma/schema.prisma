@@ -29,7 +29,7 @@ model Task {
   prioritas      String
   attachment     String
   index          Int
-  Subtask        Subtask[]
+  subtask        Subtask[]
 
   @@map("task")
 }
