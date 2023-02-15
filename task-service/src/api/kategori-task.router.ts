@@ -1,8 +1,8 @@
 import { Router, Request, Response } from "express";
 import { validate } from "./middleware";
 import {
-  kategoriTaskSchema,
-  KategoriTaskSchema,
+  kategoriTaskCreate,
+  KategoriTaskCreate,
   KategoriTaskUpdate,
   kategoriTaskUpdate,
 } from "../schema/kategori-task.schema";
@@ -20,9 +20,9 @@ export const kategoriTaskRouter = Router();
 
 kategoriTaskRouter.post(
   "/",
-  validate(kategoriTaskSchema),
+  validate(kategoriTaskCreate),
   async (req: Request, res: Response) => {
-    const payload = req.body as KategoriTaskSchema;
+    const payload = req.body as KategoriTaskCreate;
     const kategoriTask = await createKategoriTask(payload);
     if (!kategoriTask) return res.sendStatus(400);
     return res.sendStatus(201);
