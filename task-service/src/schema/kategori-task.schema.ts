@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { KategoriTask, Task } from "@prisma/client";
 
-export const kategoriTaskSchema = z
+export const kategoriTaskCreate = z
   .object({
     nama: z.string(),
-    project_id: z.string().uuid(),
+    projectId: z.string().uuid(),
   })
   .strict();
 
@@ -13,5 +14,6 @@ export const kategoriTaskUpdate = z
   })
   .strict();
 
-export type KategoriTaskSchema = z.infer<typeof kategoriTaskSchema>;
+export type KategoriTaskCreate = z.infer<typeof kategoriTaskCreate>;
 export type KategoriTaskUpdate = z.infer<typeof kategoriTaskUpdate>;
+export type KategoriTaskReturn = KategoriTask & { task: Task[] | null };

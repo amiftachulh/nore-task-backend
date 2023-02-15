@@ -50,8 +50,8 @@ clientRouter.get(
 
 clientRouter.patch(
   "/:id",
-  checkIfAdmin(),
   validate(clientSchema),
+  checkIfAdmin(),
   async (req: Request, res: Response) => {
     const clientId = req.params.id;
     const payload = req.body as ClientSchema;

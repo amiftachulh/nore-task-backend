@@ -1,11 +1,12 @@
 import { prisma } from "../db/client";
-import { ProjectSchema } from "../schema/project.schema";
+import { Project } from "@prisma/client";
+import { ProjectSchema, ProjectReturn } from "../schema/project.schema";
 import axios from "axios";
 import config from "../config";
 
 export async function createProject(
   payload: ProjectSchema
-): Promise<ProjectSchema | null> {
+): Promise<Project | null> {
   try {
     return await prisma.project.create({
       data: payload,
@@ -19,17 +20,19 @@ const projectReturn = {
   id: true,
   nama: true,
   client: true,
-  jenis_layanan: true,
+  jenisLayanan: true,
   keterangan: true,
 };
 
-export async function getAllProjects(): Promise<any | null> {
+export async function getAllProjects(): Promise<ProjectReturn[] | null> {
   return await prisma.project.findMany({
     select: projectReturn,
   });
 }
 
-export async function getProjectById(projectId: string): Promise<any | null> {
+export async function getProjectById(
+  projectId: string
+): Promise<ProjectReturn | null> {
   return await prisma.project.findFirst({
     where: { id: projectId },
     select: projectReturn,
@@ -39,7 +42,7 @@ export async function getProjectById(projectId: string): Promise<any | null> {
 export async function updateProjectById(
   projectId: string,
   payload: ProjectSchema
-): Promise<ProjectSchema | null> {
+): Promise<Project | null> {
   try {
     return await prisma.project.update({
       where: { id: projectId },
@@ -52,7 +55,7 @@ export async function updateProjectById(
 
 export async function deleteProjectById(
   projectId: string
-): Promise<any | null> {
+): Promise<Project | null> {
   try {
     await axios.delete(
       `${config.api.task}/event/delete-kategori-task/${projectId}`,

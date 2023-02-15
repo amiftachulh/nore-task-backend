@@ -1,24 +1,26 @@
 import { prisma } from "../db/client";
+import { KategoriTask } from "@prisma/client";
 import { BoardSchema } from "../schema/board.schema";
 import {
-  KategoriTaskSchema,
+  KategoriTaskReturn,
+  KategoriTaskCreate,
   KategoriTaskUpdate,
 } from "../schema/kategori-task.schema";
 import config from "../config";
 import axios from "axios";
 
 export async function createKategoriTask(
-  payload: KategoriTaskSchema
-): Promise<KategoriTaskSchema | null> {
+  payload: KategoriTaskCreate
+): Promise<KategoriTask | null> {
   try {
-    await axios.get(`${config.api.main}/event/project/${payload.project_id}`);
-    const kategoriTask = await prisma.kategori_task.aggregate({
-      where: { project_id: payload.project_id },
+    await axios.get(`${config.api.main}/event/project/${payload.projectId}`);
+    const kategoriTask = await prisma.kategoriTask.aggregate({
+      where: { projectId: payload.projectId },
       _max: { index: true },
     });
     const index =
       kategoriTask._max.index !== null ? kategoriTask._max.index + 1 : 0;
-    return await prisma.kategori_task.create({
+    return await prisma.kategoriTask.create({
       data: { ...payload, index: index },
     });
   } catch (error) {
@@ -29,13 +31,15 @@ export async function createKategoriTask(
 export const kategoriTaskReturn = {
   id: true,
   nama: true,
-  project_id: true,
+  projectId: true,
   index: true,
   task: true,
 };
 
-export async function getAllKategoriTasks(): Promise<any | null> {
-  return await prisma.kategori_task.findMany({
+export async function getAllKategoriTasks(): Promise<
+  KategoriTaskReturn[] | null
+> {
+  return await prisma.kategoriTask.findMany({
     select: kategoriTaskReturn,
     orderBy: { index: "asc" },
   });
@@ -43,9 +47,9 @@ export async function getAllKategoriTasks(): Promise<any | null> {
 
 export async function getKategoriTaskByProjectId(
   projectId: string
-): Promise<Array<object>> {
-  return await prisma.kategori_task.findMany({
-    where: { project_id: projectId },
+): Promise<KategoriTaskReturn[]> {
+  return await prisma.kategoriTask.findMany({
+    where: { projectId: projectId },
     select: kategoriTaskReturn,
   });
 }
@@ -53,9 +57,9 @@ export async function getKategoriTaskByProjectId(
 export async function updateKategoriTaskById(
   kategoriTaskId: string,
   payload: KategoriTaskUpdate
-): Promise<KategoriTaskSchema | null> {
+): Promise<KategoriTask | null> {
   try {
-    return await prisma.kategori_task.update({
+    return await prisma.kategoriTask.update({
       where: { id: kategoriTaskId },
       data: payload,
     });
@@ -69,7 +73,7 @@ export async function swapKategoriTask(board: BoardSchema): Promise<boolean> {
   const columns = board.columns;
   columns.forEach(async (column, index) => {
     try {
-      await prisma.kategori_task.update({
+      await prisma.kategoriTask.update({
         where: { id: column.id },
         data: { index: index },
       });
@@ -82,11 +86,11 @@ export async function swapKategoriTask(board: BoardSchema): Promise<boolean> {
 }
 
 export async function deleteKategoriTaskById(
-  kategori_taskId: string
-): Promise<KategoriTaskSchema | null> {
+  kategoriTaskId: string
+): Promise<KategoriTask | null> {
   try {
-    return await prisma.kategori_task.delete({
-      where: { id: kategori_taskId },
+    return await prisma.kategoriTask.delete({
+      where: { id: kategoriTaskId },
     });
   } catch (error) {
     return null;
@@ -96,13 +100,13 @@ export async function deleteKategoriTaskById(
 export async function deleteKategoriTaskByProjectId(
   projectId: string
 ): Promise<boolean> {
-  const kategoriTask = await prisma.kategori_task.findFirst({
-    where: { project_id: projectId },
+  const kategoriTask = await prisma.kategoriTask.findFirst({
+    where: { projectId: projectId },
   });
   if (!kategoriTask) return true;
   try {
-    await prisma.kategori_task.deleteMany({
-      where: { project_id: projectId },
+    await prisma.kategoriTask.deleteMany({
+      where: { projectId: projectId },
     });
     return true;
   } catch (error) {

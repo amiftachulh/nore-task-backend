@@ -10,20 +10,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model client {
+model Client {
   id         String    @id @default(uuid())
   nama       String    @db.VarChar(60)
   perusahaan String?
   alamat     String?
-  nomor_hp   String    @db.VarChar(15)
-  project    project[]
+  nomorHp    String    @map("nomor_hp") @db.VarChar(15)
+  project    Project[]
+
+  @@map("client")
 }
 
-model project {
-  id            String  @id @default(uuid())
-  nama          String
-  client        client? @relation(fields: [client_id], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  client_id     String?
-  jenis_layanan String
-  keterangan    String? @db.TinyText
+model Project {
+  id           String  @id @default(uuid())
+  nama         String
+  client       Client? @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  clientId     String? @map("client_id")
+  jenisLayanan String  @map("jenis_layanan")
+  keterangan   String? @db.TinyText
+
+  @@map("project")
 }

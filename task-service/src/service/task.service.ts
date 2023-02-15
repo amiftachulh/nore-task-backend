@@ -1,12 +1,11 @@
 import { prisma } from "../db/client";
+import { Task } from "@prisma/client";
 import { BoardSchema } from "../schema/board.schema";
-import { TaskSchema } from "../schema/task.schema";
+import { TaskReturn, TaskSchema } from "../schema/task.schema";
 
-export async function createTask(
-  payload: TaskSchema
-): Promise<TaskSchema | null> {
+export async function createTask(payload: TaskSchema): Promise<Task | null> {
   const task = await prisma.task.aggregate({
-    where: { kategori_task_id: payload.kategori_task_id },
+    where: { kategoriTaskId: payload.kategoriTaskId },
     _max: { index: true },
   });
   const index = task._max.index !== null ? task._max.index + 1 : 0;
@@ -22,20 +21,21 @@ export async function createTask(
 
 export const taskReturn = {
   id: true,
-  kategori_task: true,
+  nama: true,
+  kategoriTask: true,
   kebutuhan: true,
   prioritas: true,
   attachment: true,
   subtask: true,
 };
 
-export async function getAllTasks(): Promise<any | null> {
+export async function getAllTasks(): Promise<TaskReturn[] | null> {
   return await prisma.task.findMany({
     select: taskReturn,
   });
 }
 
-export async function getTaskById(taskId: string): Promise<any | null> {
+export async function getTaskById(taskId: string): Promise<TaskReturn | null> {
   return await prisma.task.findUnique({
     where: { id: taskId },
     select: taskReturn,
@@ -45,7 +45,7 @@ export async function getTaskById(taskId: string): Promise<any | null> {
 export async function updateTaskById(
   taskId: string,
   payload: TaskSchema
-): Promise<any | null> {
+): Promise<Task | null> {
   try {
     return await prisma.task.update({
       where: { id: taskId },
@@ -65,7 +65,7 @@ export async function swapTask(board: BoardSchema): Promise<boolean> {
       try {
         await prisma.task.update({
           where: { id: card.id },
-          data: { kategori_task_id: columnId, index: index },
+          data: { kategoriTaskId: columnId, index: index },
         });
       } catch (error) {
         error = error;
@@ -76,7 +76,7 @@ export async function swapTask(board: BoardSchema): Promise<boolean> {
   return true;
 }
 
-export async function deleteTaskById(taskId: string): Promise<any | null> {
+export async function deleteTaskById(taskId: string): Promise<Task | null> {
   try {
     return await prisma.task.delete({
       where: { id: taskId },

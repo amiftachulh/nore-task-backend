@@ -5,7 +5,6 @@ import config from "../config";
 import axios from "axios";
 import { ChangePasswordSchema } from "../schema/auth.schema";
 import { ResponseService } from "../types";
-import { user } from "@prisma/client";
 
 export async function registerUser(payload: UserCreate): Promise<any | null> {
   const user = await prisma.user.findMany({
@@ -20,14 +19,14 @@ export async function registerUser(payload: UserCreate): Promise<any | null> {
 
 export const omitUserPassword = {
   id: true,
-  nama_lengkap: true,
+  namaLengkap: true,
   username: true,
-  nomor_hp: true,
+  nomorHp: true,
   divisi: true,
   role: true,
 };
 
-export async function getAllUsers(): Promise<Array<UserReturn> | null> {
+export async function getAllUsers(): Promise<UserReturn[] | null> {
   return await prisma.user.findMany({
     select: omitUserPassword,
   });

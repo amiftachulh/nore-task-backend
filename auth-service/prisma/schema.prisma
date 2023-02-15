@@ -10,20 +10,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
-  id            String  @id @default(uuid())
-  nama_lengkap  String  @db.VarChar(60)
-  username      String  @unique @db.VarChar(30)
-  password      String  @db.VarChar(64)
-  nomor_hp      String  @db.VarChar(15)
-  divisi        String
-  role          role?   @relation(fields: [role_id], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  role_id       Int?
-  refresh_token String?
+model User {
+  id           String  @id @default(uuid())
+  namaLengkap  String  @map("nama_lengkap") @db.VarChar(60)
+  username     String  @unique @db.VarChar(30)
+  password     String  @db.VarChar(64)
+  nomorHp      String  @map("nomor_hp") @db.VarChar(15)
+  divisi       String
+  roleId       Int?    @map("role_id")
+  role         Role?   @relation(fields: [roleId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  refreshToken String? @map("refresh_token")
+
+  @@map("user")
 }
 
-model role {
+model Role {
   id   Int    @id
   nama String @unique
-  user user[]
+  user User[]
+
+  @@map("role")
 }

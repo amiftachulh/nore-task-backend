@@ -3,45 +3,50 @@ import { jwtPayloadSchema, LoginSchema } from "../schema/auth.schema";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import config from "../config";
-import { getUserById } from "./user.service";
-    
+
 export async function getAccess(payload: LoginSchema): Promise<any | null> {
   const user = await prisma.user.findUnique({
     where: { username: payload.username },
+    include: { role: true },
   });
   // check if user exists
   if (!user) return null;
 
   // check if passwords match
-  if (!(await bcrypt.compare(payload.password, user.password))) return null;
-  // if match, return jwt with user id
-  const { password, refresh_token, id, ...userData } = user;
-  const accessToken = jwt.sign({ id }, config.auth.accessToken as string, {
-    algorithm: "HS256",
-    expiresIn: "15m",
-  });
-  const refreshToken = jwt.sign({ id }, config.auth.refreshToken as string, {
-    algorithm: "HS256",
-    expiresIn: "1d",
-  });
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { refresh_token: refreshToken },
-  });
-  const userWithoutPassword = await getUserById(user.id);
+  if (await bcrypt.compare(payload.password, user.password)) {
+    // if match, return jwt with user id
+    const { id, password, roleId, refreshToken, ...userData } = user;
+    const accessToken = jwt.sign({ id }, config.auth.accessToken as string, {
+      algorithm: "HS256",
+      expiresIn: "15m",
+    });
+    const newRefreshToken = jwt.sign(
+      { id },
+      config.auth.refreshToken as string,
+      {
+        algorithm: "HS256",
+        expiresIn: "1d",
+      }
+    );
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken: newRefreshToken },
+    });
 
-  return { ...userWithoutPassword, accessToken, refreshToken };
+    return { id, ...userData, accessToken, refreshToken: newRefreshToken };
+  }
+  return null;
 }
 
 export async function getNewAccessToken(
   refreshToken: string
 ): Promise<any | null> {
   const user = await prisma.user.findFirst({
-    where: { refresh_token: refreshToken },
+    where: { refreshToken: refreshToken },
     include: { role: true },
   });
   if (!user) return null;
-  const { password, refresh_token, role_id, ...userData } = user;
+  const { password, refreshToken: _, roleId, ...userData } = user;
   const newAccessToken = jwt.verify(
     refreshToken,
     config.auth.refreshToken as string,
@@ -65,11 +70,11 @@ export async function deleteRefreshToken(
   refreshToken: string
 ): Promise<any | null> {
   const user = await prisma.user.findFirst({
-    where: { refresh_token: refreshToken },
+    where: { refreshToken: refreshToken },
   });
   if (!user) return null;
   return await prisma.user.update({
     where: { id: user.id },
-    data: { refresh_token: null },
+    data: { refreshToken: null },
   });
 }

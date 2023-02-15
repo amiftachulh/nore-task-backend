@@ -1,9 +1,7 @@
 import { prisma } from "../db/client";
-import { RoleSchema } from "../schema/role.schema";
+import { Role } from "@prisma/client";
 
-export async function createRole(
-  payload: RoleSchema
-): Promise<RoleSchema | null> {
+export async function createRole(payload: Role): Promise<Role | null> {
   const roleId = await getRoleById(payload.id);
   const roleNama = await prisma.role.findUnique({
     where: { nama: payload.nama },
@@ -14,13 +12,13 @@ export async function createRole(
   });
 }
 
-export async function getAllRoles(): Promise<RoleSchema[] | null> {
+export async function getAllRoles(): Promise<Role[] | null> {
   return await prisma.role.findMany({
     orderBy: { id: "asc" },
   });
 }
 
-export async function getRoleById(roleId: number): Promise<RoleSchema | null> {
+export async function getRoleById(roleId: number): Promise<Role | null> {
   return await prisma.role.findUnique({
     where: { id: roleId },
   });
@@ -28,8 +26,8 @@ export async function getRoleById(roleId: number): Promise<RoleSchema | null> {
 
 export async function updateRoleById(
   roleId: number,
-  payload: RoleSchema
-): Promise<RoleSchema | null> {
+  payload: Role
+): Promise<Role | null> {
   try {
     return await prisma.role.update({
       where: { id: roleId },
@@ -40,9 +38,7 @@ export async function updateRoleById(
   }
 }
 
-export async function deleteRoleById(
-  roleId: number
-): Promise<RoleSchema | null> {
+export async function deleteRoleById(roleId: number): Promise<Role | null> {
   try {
     return await prisma.role.delete({
       where: { id: roleId },

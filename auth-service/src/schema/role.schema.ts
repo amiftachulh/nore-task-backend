@@ -6,5 +6,3 @@ export const roleSchema = z
     nama: z.string().min(1),
   })
   .strict();
-
-export type RoleSchema = z.infer<typeof roleSchema>;

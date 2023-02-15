@@ -10,31 +10,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model kategori_task {
-  id         String @id @default(uuid())
-  nama       String
-  project_id String
-  index      Int
-  task       task[]
+model KategoriTask {
+  id        String @id @default(uuid())
+  nama      String
+  projectId String @map("projectId")
+  index     Int
+  task      Task[]
+
+  @@map("kategori_task")
 }
 
-model task {
-  id               String        @id @default(uuid())
-  nama             String
-  kategori_task    kategori_task @relation(fields: [kategori_task_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  kategori_task_id String
-  kebutuhan        String        @db.Text
-  prioritas        String
-  attachment       String
-  index            Int
-  subtask          subtask[]
+model Task {
+  id             String       @id @default(uuid())
+  nama           String
+  kategoriTask   KategoriTask @relation(fields: [kategoriTaskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  kategoriTaskId String       @map("kategori_task_id")
+  kebutuhan      String       @db.Text
+  prioritas      String
+  attachment     String
+  index          Int
+  Subtask        Subtask[]
+
+  @@map("task")
 }
 
-model subtask {
+model Subtask {
   id         String  @id @default(uuid())
-  task       task    @relation(fields: [task_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  task_id    String
-  user_id    String?
+  task       Task    @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  taskId     String  @map("task_id")
+  userId     String? @map("user_id")
   keterangan String
   poin       Int     @default(1)
+
+  @@map("subtask")
 }

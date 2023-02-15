@@ -46,9 +46,9 @@ export function authenticate() {
         where: { id: verifiedPayload.id },
         select: {
           id: true,
-          nama_lengkap: true,
+          namaLengkap: true,
           username: true,
-          nomor_hp: true,
+          nomorHp: true,
           divisi: true,
           role: true,
         },
