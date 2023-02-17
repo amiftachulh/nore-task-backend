@@ -26,6 +26,18 @@ export function validate(schema: AnyZodObject) {
   };
 }
 
+export function createKomentarAuth() {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const header = req.header("X-User");
+    if (!header) return res.sendStatus(401);
+    const user = JSON.parse(header) as User;
+    (req as AuthorizedRequest).user = user;
+    return next();
+  };
+}
+
+export type AuthorizedRequest = Request & { user: User };
+
 export function updateKomentarAuth() {
   return async (req: Request, res: Response, next: NextFunction) => {
     const header = req.header("X-User");

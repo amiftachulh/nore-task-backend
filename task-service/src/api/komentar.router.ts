@@ -11,16 +11,24 @@ import {
   getKomentarByTaskId,
   updateKomentarById,
 } from "../service/komentar.service";
-import { deleteKomentarAuth, updateKomentarAuth, validate } from "./middleware";
+import {
+  AuthorizedRequest,
+  createKomentarAuth,
+  deleteKomentarAuth,
+  updateKomentarAuth,
+  validate,
+} from "./middleware";
 
 export const komentarRouter = Router();
 
 komentarRouter.post(
   "/",
   validate(komentarCreate),
+  createKomentarAuth(),
   async (req: Request, res: Response) => {
+    const user = (req as AuthorizedRequest).user;
     const payload = req.body as KomentarCreate;
-    const komentar = await createKomentar(payload);
+    const komentar = await createKomentar(user.id, payload);
     if (komentar.err) return res.status(komentar.code).send(komentar.err);
     return res.status(komentar.code).send("Komentar berhasil dibuat!");
   }

@@ -4,7 +4,6 @@ import { Komentar as K } from "@prisma/client";
 export const komentarCreate = z
   .object({
     taskId: z.string().uuid(),
-    userId: z.string().uuid(),
     konten: z.string().min(1).max(500),
   })
   .strict();

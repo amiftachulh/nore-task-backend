@@ -10,22 +10,15 @@ import axios from "axios";
 import config from "../config";
 
 export async function createKomentar(
+  userId: string,
   payload: KomentarCreate
 ): Promise<ResponseService<Komentar | null>> {
-  try {
-    await axios.get(`${config.api.auth}/event/user/${payload.userId}`);
-  } catch (error) {
-    return {
-      code: 404,
-      data: null,
-      err: "User tidak ditemukan!",
-    };
-  }
   try {
     const createdAt = new Date().toISOString();
     const komentar = await prisma.komentar.create({
       data: {
         ...payload,
+        userId,
         createdAt,
       },
     });
