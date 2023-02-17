@@ -29,12 +29,6 @@ export const taskReturn = {
   subtask: true,
 };
 
-export async function getAllTasks(): Promise<TaskReturn[] | null> {
-  return await prisma.task.findMany({
-    select: taskReturn,
-  });
-}
-
 export async function getTaskById(taskId: string): Promise<TaskReturn | null> {
   return await prisma.task.findUnique({
     where: { id: taskId },

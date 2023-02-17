@@ -7,5 +7,5 @@ eventRouter.get("/user/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   const user = await getUserById(id);
   if (!user) return res.sendStatus(404);
-  return res.sendStatus(200);
+  return res.status(200).send(user);
 });

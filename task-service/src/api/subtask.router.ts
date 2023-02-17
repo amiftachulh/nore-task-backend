@@ -2,11 +2,9 @@ import { Router, Request, Response } from "express";
 import { subtaskSchema, SubtaskSchema } from "../schema/subtask.schema";
 import {
   createSubtask,
-  getAllSubtasks,
   getSubtaskById,
   updateSubtaskById,
   deleteSubtaskById,
-  setNullSubtaskByUserId,
 } from "../service/subtask.service";
 import { validate } from "./middleware";
 
@@ -22,12 +20,6 @@ subtaskRouter.post(
     return res.sendStatus(201);
   }
 );
-
-subtaskRouter.get("/", async (req: Request, res: Response) => {
-  const subtasks = await getAllSubtasks();
-  if (!subtasks) return res.sendStatus(404);
-  return res.status(200).send(subtasks);
-});
 
 subtaskRouter.get("/:id", async (req: Request, res: Response) => {
   const subtaskId = req.params.id;

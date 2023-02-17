@@ -19,7 +19,7 @@ export function authenticate(auth: boolean) {
       (req as AuthorizedRequest).user = user;
       return next();
     } catch (error) {
-      return res.status(401).send(error);
+      return res.sendStatus(401);
     }
   };
 }

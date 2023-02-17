@@ -36,15 +36,6 @@ export const kategoriTaskReturn = {
   task: true,
 };
 
-export async function getAllKategoriTasks(): Promise<
-  KategoriTaskReturn[] | null
-> {
-  return await prisma.kategoriTask.findMany({
-    select: kategoriTaskReturn,
-    orderBy: { index: "asc" },
-  });
-}
-
 export async function getKategoriTaskByProjectId(
   projectId: string
 ): Promise<KategoriTaskReturn[]> {

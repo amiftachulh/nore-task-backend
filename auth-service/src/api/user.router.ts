@@ -26,11 +26,6 @@ userRouter.get("/", async (req: Request, res: Response) => {
   return res.status(200).send(users);
 });
 
-userRouter.get("/me", authenticate(), async (req: Request, res: Response) => {
-  const user = (req as AuthorizedRequest).user;
-  return res.status(200).send(user);
-});
-
 userRouter.get("/:id", async (req: Request, res: Response) => {
   const userId = req.params.id;
   const user = await getUserById(userId);

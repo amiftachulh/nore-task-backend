@@ -3,7 +3,6 @@ import { BoardSchema, boardSchema } from "../schema/board.schema";
 import { taskSchema, TaskSchema } from "../schema/task.schema";
 import {
   createTask,
-  getAllTasks,
   getTaskById,
   updateTaskById,
   deleteTaskById,
@@ -23,12 +22,6 @@ taskRouter.post(
     return res.sendStatus(201);
   }
 );
-
-taskRouter.get("/", async (req: Request, res: Response) => {
-  const tasks = await getAllTasks();
-  if (!tasks) return res.sendStatus(404);
-  return res.status(200).send(tasks);
-});
 
 taskRouter.get("/:id", async (req: Request, res: Response) => {
   const taskId = req.params.id;

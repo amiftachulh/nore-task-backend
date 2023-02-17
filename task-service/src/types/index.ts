@@ -1,3 +1,9 @@
+export type ResponseService<T> = {
+  code: number;
+  data: T;
+  err: string | null;
+};
+
 export type User = {
   id: string;
   nama_lengkap: string;

@@ -25,3 +25,27 @@ export function validate(schema: AnyZodObject) {
     }
   };
 }
+
+export function updateKomentarAuth() {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const header = req.header("X-User");
+    if (!header) return res.sendStatus(401);
+    const user = JSON.parse(header) as User;
+    if (user.role !== null && user.id === req.body.userId) return next();
+    return res.sendStatus(403);
+  };
+}
+
+export function deleteKomentarAuth() {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const header = req.header("X-User");
+    if (!header) return res.sendStatus(401);
+    const user = JSON.parse(header) as User;
+    if (
+      user.role !== null &&
+      (user.role.nama === "Admin" || user.id === req.body.userId)
+    )
+      return next();
+    return res.sendStatus(403);
+  };
+}

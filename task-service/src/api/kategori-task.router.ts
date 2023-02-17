@@ -8,7 +8,6 @@ import {
 } from "../schema/kategori-task.schema";
 import {
   createKategoriTask,
-  getAllKategoriTasks,
   getKategoriTaskByProjectId,
   updateKategoriTaskById,
   deleteKategoriTaskById,
@@ -28,12 +27,6 @@ kategoriTaskRouter.post(
     return res.sendStatus(201);
   }
 );
-
-kategoriTaskRouter.get("/", async (req: Request, res: Response) => {
-  const kategoriTasks = await getAllKategoriTasks();
-  if (!kategoriTasks) return res.sendStatus(404);
-  return res.status(200).send(kategoriTasks);
-});
 
 kategoriTaskRouter.get("/:id", async (req: Request, res: Response) => {
   const kategoriTaskId = req.params.id;

@@ -25,12 +25,6 @@ const subtaskReturn = {
   poin: true,
 };
 
-export async function getAllSubtasks(): Promise<SubtaskReturn[] | null> {
-  return await prisma.subtask.findMany({
-    select: subtaskReturn,
-  });
-}
-
 export async function getSubtaskById(
   subtaskId: string
 ): Promise<SubtaskReturn | null> {

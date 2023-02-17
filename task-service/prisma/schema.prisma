@@ -30,17 +30,50 @@ model Task {
   attachment     String
   index          Int
   subtask        Subtask[]
+  Komentar       Komentar[]
+  LabelTask      LabelTask[]
 
   @@map("task")
 }
 
+model Komentar {
+  id        String    @id @default(uuid())
+  taskId    String    @map("task_id")
+  task      Task      @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId    String    @map("user_id")
+  konten    String    @db.VarChar(500)
+  createdAt DateTime  @map("created_at")
+  updatedAt DateTime? @map("updated_at")
+
+  @@map("komentar")
+}
+
+model LabelTask {
+  id     String @id @default(uuid())
+  nama   String
+  taskId String @map("task_id")
+  task   Task   @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@map("label_task")
+}
+
 model Subtask {
-  id         String  @id @default(uuid())
-  task       Task    @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  taskId     String  @map("task_id")
-  userId     String? @map("user_id")
-  keterangan String
-  poin       Int     @default(1)
+  id           String         @id @default(uuid())
+  task         Task           @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  taskId       String         @map("task_id")
+  userId       String?        @map("user_id")
+  keterangan   String
+  poin         Int            @default(1)
+  LabelSubtask LabelSubtask[]
 
   @@map("subtask")
+}
+
+model LabelSubtask {
+  id        String  @id @default(uuid())
+  nama      String
+  subtaskId String  @map("subtask_id")
+  subtask   Subtask @relation(fields: [subtaskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@map("label_subtask")
 }

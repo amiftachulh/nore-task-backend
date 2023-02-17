@@ -15,5 +15,5 @@ export type TaskSchema = z.infer<typeof taskSchema>;
 
 type Task = Omit<T, "kategoriTaskId" | "index">;
 export type TaskReturn = Task & { kategoriTask: KategoriTask } & {
-  subtask: Subtask;
+  subtask: any;
 };

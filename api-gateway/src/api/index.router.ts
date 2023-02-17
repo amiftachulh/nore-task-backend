@@ -18,7 +18,7 @@ const routes = [
     target: config.service.main,
   },
   {
-    path: ["/kategori-task", "/task", "/subtask"],
+    path: ["/kategori-task", "/task", "/komentar", "/subtask"],
     auth: true,
     target: config.service.task,
   },
