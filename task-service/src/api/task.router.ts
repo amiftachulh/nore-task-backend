@@ -18,15 +18,15 @@ taskRouter.post(
   async (req: Request, res: Response) => {
     const payload = req.body as TaskSchema;
     const task = await createTask(payload);
-    if (!task) return res.sendStatus(400);
-    return res.sendStatus(201);
+    if (!task) return res.status(400).send("Task gagal dibuat!");
+    return res.status(201).send("Task berhasil dibuat");
   }
 );
 
 taskRouter.get("/:id", async (req: Request, res: Response) => {
   const taskId = req.params.id;
   const task = await getTaskById(taskId);
-  if (!task) return res.sendStatus(404);
+  if (!task) return res.status(404).send("Task tidak ditemukan");
   return res.status(200).send(task);
 });
 
@@ -36,8 +36,8 @@ taskRouter.patch(
   async (req: Request, res: Response) => {
     const board = req.body as BoardSchema;
     const swap = await swapTask(board);
-    if (!swap) return res.sendStatus(400);
-    return res.sendStatus(200);
+    if (!swap) return res.status(400).send("Task gagal diupdate!");
+    return res.status(200).send("Task berhasil diupdate");
   }
 );
 
@@ -48,14 +48,14 @@ taskRouter.patch(
     const taskId = req.params.id;
     const payload = req.body as TaskSchema;
     const task = await updateTaskById(taskId, payload);
-    if (!task) return res.sendStatus(404);
-    return res.sendStatus(200);
+    if (!task) return res.status(400).send("Task gagal diupdate");
+    return res.status(200).send("Task berhasil diupdate");
   }
 );
 
 taskRouter.delete("/:id", async (req: Request, res: Response) => {
   const taskId = req.params.id;
   const task = await deleteTaskById(taskId);
-  if (!task) return res.sendStatus(404);
-  return res.sendStatus(200);
+  if (!task) return res.status(404).send("Task tidak ditemukan!");
+  return res.status(200).send("Task berhasil dihapus");
 });

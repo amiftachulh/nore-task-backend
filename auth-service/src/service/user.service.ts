@@ -27,9 +27,11 @@ export const omitUserPassword = {
 };
 
 export async function getAllUsers(): Promise<UserReturn[] | null> {
-  return await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     select: omitUserPassword,
   });
+  if (!users.length) return null;
+  return users;
 }
 
 export async function getUserById(userId: string): Promise<UserReturn | null> {
@@ -74,20 +76,20 @@ export async function updatePassword(
     return {
       code: 404,
       data: null,
-      err: "User not found!",
+      err: "User tidak ditemukan!",
     };
   const compare = await bcrypt.compare(currentPassword, user.password);
   if (!compare)
     return {
       code: 400,
       data: null,
-      err: "Wrong password!",
+      err: "Password salah!",
     };
   if (newPassword !== confirmNewPassword)
     return {
       code: 400,
       data: null,
-      err: "New password didn't match",
+      err: "Password dan konfirmasi password tidak sama!",
     };
   try {
     const hashedPassword = await bcrypt.hash(newPassword, 10);

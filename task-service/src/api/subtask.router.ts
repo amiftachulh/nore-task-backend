@@ -16,15 +16,15 @@ subtaskRouter.post(
   async (req: Request, res: Response) => {
     const payload = req.body as SubtaskSchema;
     const subtask = await createSubtask(payload);
-    if (!subtask) return res.sendStatus(400);
-    return res.sendStatus(201);
+    if (!subtask) return res.status(400).send("Subtask gagal dibuat!");
+    return res.status(201).send("Subtask berhasil dibuat");
   }
 );
 
 subtaskRouter.get("/:id", async (req: Request, res: Response) => {
   const subtaskId = req.params.id;
   const subtask = await getSubtaskById(subtaskId);
-  if (!subtask) return res.sendStatus(404);
+  if (!subtask) return res.status(404).send("Subtask tidak ditemukan!");
   return res.status(200).send(subtask);
 });
 
@@ -35,14 +35,14 @@ subtaskRouter.patch(
     const payload = req.body as SubtaskSchema;
     const subtaskId = req.params.id;
     const subtask = await updateSubtaskById(subtaskId, payload);
-    if (!subtask) return res.sendStatus(404);
-    return res.sendStatus(200);
+    if (!subtask) return res.status(404).send("Subtask gagal diupdate!");
+    return res.status(200).send("Subtask berhasil diupdate");
   }
 );
 
 subtaskRouter.delete("/:id", async (req: Request, res: Response) => {
   const subtaskId = req.params.id;
   const subtask = await deleteSubtaskById(subtaskId);
-  if (!subtask) return res.sendStatus(404);
-  return res.sendStatus(200);
+  if (!subtask) return res.status(404).send("Subtask tidak ditemukan!");
+  return res.status(200).send("Subtask berhasil dihapus");
 });

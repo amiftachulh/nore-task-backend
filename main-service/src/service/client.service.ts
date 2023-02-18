@@ -11,9 +11,11 @@ export async function createClient(
 }
 
 export async function getAllClients(): Promise<Client[] | null> {
-  return await prisma.client.findMany({
+  const clients = await prisma.client.findMany({
     include: { project: true },
   });
+  if (!clients.length) return null;
+  return clients;
 }
 
 export async function getClientById(clientId: string): Promise<Client | null> {

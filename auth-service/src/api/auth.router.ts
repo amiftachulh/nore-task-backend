@@ -21,9 +21,9 @@ authRouter.post(
   validate(userCreate),
   async (req: Request, res: Response) => {
     const payload = req.body as UserCreate;
-    const user = await registerUser(payload);
-    if (!user) return res.status(409).send("Username sudah diambil!");
-    return res.sendStatus(201);
+    const result = await registerUser(payload);
+    if (!result) return res.status(409).send("Username sudah diambil!");
+    return res.status(201).send("Berhasil mendaftar");
   }
 );
 
@@ -58,6 +58,6 @@ authRouter.delete("/logout", async (req: Request, res: Response) => {
   if (!refreshToken) return res.sendStatus(400);
   const user = await deleteRefreshToken(refreshToken);
   res.clearCookie("refreshToken");
-  if (!user) return res.sendStatus(404);
-  return res.sendStatus(200);
+  if (!user) return res.status(404).send("User tidak ditemukan!");
+  return res.status(200).send("Berhasil logout");
 });

@@ -38,11 +38,13 @@ export const kategoriTaskReturn = {
 
 export async function getKategoriTaskByProjectId(
   projectId: string
-): Promise<KategoriTaskReturn[]> {
-  return await prisma.kategoriTask.findMany({
+): Promise<KategoriTaskReturn[] | null> {
+  const kategoriTask = await prisma.kategoriTask.findMany({
     where: { projectId: projectId },
     select: kategoriTaskReturn,
   });
+  if (!kategoriTask.length) return null;
+  return kategoriTask;
 }
 
 export async function updateKategoriTaskById(

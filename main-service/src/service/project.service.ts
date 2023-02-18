@@ -25,9 +25,11 @@ const projectReturn = {
 };
 
 export async function getAllProjects(): Promise<ProjectReturn[] | null> {
-  return await prisma.project.findMany({
+  const projects = await prisma.project.findMany({
     select: projectReturn,
   });
+  if (!projects.length) return null;
+  return projects;
 }
 
 export async function getProjectById(

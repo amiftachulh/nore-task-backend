@@ -49,8 +49,8 @@ komentarRouter.patch(
     const id = req.params.id;
     const payload = req.body as KomentarUpdate;
     const komentar = await updateKomentarById(id, payload);
-    if (!komentar) return res.status(400).send("Update komentar gagal!");
-    return res.status(200).send("Update komentar berhasil");
+    if (!komentar) return res.status(400).send("Komentar gagal diupdate!");
+    return res.status(200).send("Komentar berhasil diupdate");
   }
 );
 

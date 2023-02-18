@@ -13,9 +13,11 @@ export async function createRole(payload: Role): Promise<Role | null> {
 }
 
 export async function getAllRoles(): Promise<Role[] | null> {
-  return await prisma.role.findMany({
+  const roles = await prisma.role.findMany({
     orderBy: { id: "asc" },
   });
+  if (!roles.length) return null;
+  return roles;
 }
 
 export async function getRoleById(roleId: number): Promise<Role | null> {
