@@ -43,7 +43,8 @@ export function updateKomentarAuth() {
     const header = req.header("X-User");
     if (!header) return res.sendStatus(401);
     const user = JSON.parse(header) as User;
-    if (user.role !== null && user.id === req.body.userId) return next();
+    (req as AuthorizedRequest).user = user;
+    if (user.role !== null) return next();
     return res.sendStatus(403);
   };
 }

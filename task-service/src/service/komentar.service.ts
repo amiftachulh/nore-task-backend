@@ -80,8 +80,14 @@ export async function getKomentarByTaskId(
 
 export async function updateKomentarById(
   id: string,
+  userId: string,
   payload: KomentarUpdate
 ): Promise<Komentar | null> {
+  const komentar = await prisma.komentar.findUnique({
+    where: { id: id },
+  });
+  if (!komentar) return null;
+  if (userId !== komentar.userId) return null;
   try {
     const updatedAt = new Date().toISOString();
     return await prisma.komentar.update({

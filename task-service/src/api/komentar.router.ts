@@ -47,8 +47,9 @@ komentarRouter.patch(
   updateKomentarAuth(),
   async (req: Request, res: Response) => {
     const id = req.params.id;
+    const userId = (req as AuthorizedRequest).user.id;
     const payload = req.body as KomentarUpdate;
-    const komentar = await updateKomentarById(id, payload);
+    const komentar = await updateKomentarById(id, userId, payload);
     if (!komentar) return res.status(400).send("Komentar gagal diupdate!");
     return res.status(200).send("Komentar berhasil diupdate");
   }
