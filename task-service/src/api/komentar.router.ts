@@ -11,20 +11,14 @@ import {
   getKomentarByTaskId,
   updateKomentarById,
 } from "../service/komentar.service";
-import {
-  AuthorizedRequest,
-  createKomentarAuth,
-  deleteKomentarAuth,
-  updateKomentarAuth,
-  validate,
-} from "./middleware";
+import { AuthorizedRequest, authorize, validate } from "./middleware";
 
 export const komentarRouter = Router();
 
 komentarRouter.post(
   "/",
   validate(komentarCreate),
-  createKomentarAuth(),
+  authorize(),
   async (req: Request, res: Response) => {
     const user = (req as AuthorizedRequest).user;
     const payload = req.body as KomentarCreate;
@@ -44,7 +38,7 @@ komentarRouter.get("/:taskId", async (req: Request, res: Response) => {
 komentarRouter.patch(
   "/:id",
   validate(komentarUpdate),
-  updateKomentarAuth(),
+  authorize(),
   async (req: Request, res: Response) => {
     const id = req.params.id;
     const userId = (req as AuthorizedRequest).user.id;
@@ -57,10 +51,11 @@ komentarRouter.patch(
 
 komentarRouter.delete(
   "/:id",
-  deleteKomentarAuth(),
+  authorize(),
   async (req: Request, res: Response) => {
     const id = req.params.id;
-    const komentar = await deleteKomentarById(id);
+    const userId = (req as AuthorizedRequest).user.id;
+    const komentar = await deleteKomentarById(id, userId);
     if (!komentar) return res.status(400).send("Komentar tidak dapat dihapus!");
     return res.status(200).send("Komentar berhasil dihapus");
   }

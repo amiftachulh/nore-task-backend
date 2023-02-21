@@ -72,10 +72,10 @@ export function authenticate() {
 
 export type AuthorizedRequest = Request & { user: UserReturn };
 
-export function checkIfAdmin() {
+export function authorize(roles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
     const user = (req as AuthorizedRequest).user;
-    if (user.role !== null && user.role.nama === "Admin") return next();
+    if (user.role !== null && roles.includes(user.role.nama)) return next();
     return res.sendStatus(401);
   };
 }

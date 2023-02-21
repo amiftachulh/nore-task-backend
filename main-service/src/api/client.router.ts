@@ -7,18 +7,14 @@ import {
   updateClientById,
   deleteClientById,
 } from "../service/client.service";
-import {
-  checkIfAdmin,
-  checkIfAdminOrProjectManager,
-  validate,
-} from "./middleware";
+import { authorize, validate } from "./middleware";
 
 export const clientRouter = Router();
 
 clientRouter.post(
   "/",
   validate(clientSchema),
-  checkIfAdmin(),
+  authorize(["Admin"]),
   async (req: Request, res: Response) => {
     const payload = req.body as ClientSchema;
     const client = await createClient(payload);
@@ -29,7 +25,7 @@ clientRouter.post(
 
 clientRouter.get(
   "/",
-  checkIfAdminOrProjectManager(),
+  authorize(["Admin", "Project Manager"]),
   async (req: Request, res: Response) => {
     const clients = await getAllClients();
     if (!clients) return res.status(404).send("Client tidak ditemukan!");
@@ -39,7 +35,7 @@ clientRouter.get(
 
 clientRouter.get(
   "/:id",
-  checkIfAdminOrProjectManager(),
+  authorize(["Admin", "Project Manager"]),
   async (req: Request, res: Response) => {
     const clientId = req.params.id;
     const client = await getClientById(clientId);
@@ -51,7 +47,7 @@ clientRouter.get(
 clientRouter.patch(
   "/:id",
   validate(clientSchema),
-  checkIfAdmin(),
+  authorize(["Admin"]),
   async (req: Request, res: Response) => {
     const clientId = req.params.id;
     const payload = req.body as ClientSchema;
@@ -63,7 +59,7 @@ clientRouter.patch(
 
 clientRouter.delete(
   "/:id",
-  checkIfAdmin(),
+  authorize(["Admin"]),
   async (req: Request, res: Response) => {
     const clientId = req.params.id;
     const client = await deleteClientById(clientId);

@@ -99,7 +99,15 @@ export async function updateKomentarById(
   }
 }
 
-export async function deleteKomentarById(id: string): Promise<Komentar | null> {
+export async function deleteKomentarById(
+  id: string,
+  userId: string
+): Promise<Komentar | null> {
+  const komentar = await prisma.komentar.findUnique({
+    where: { id: id },
+  });
+  if (!komentar) return null;
+  if (userId !== komentar.userId) return null;
   try {
     return await prisma.komentar.delete({
       where: { id: id },
