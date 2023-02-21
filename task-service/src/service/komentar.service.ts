@@ -41,6 +41,7 @@ export async function getKomentarByTaskId(
 ): Promise<ResponseService<KomentarReturn[] | null>> {
   const komentar = await prisma.komentar.findMany({
     where: { taskId: taskId },
+    orderBy: { createdAt: "asc" },
   });
   if (!komentar.length) {
     return {
