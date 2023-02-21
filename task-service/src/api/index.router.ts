@@ -1,8 +1,10 @@
 import { Router } from "express";
+import { checkDbConnection } from "./middleware";
 import { kategoriTaskRouter } from "./kategori-task.router";
 import { taskRouter } from "./task.router";
+import { labelTaskRouter } from "./label-task.router";
 import { subtaskRouter } from "./subtask.router";
-import { checkDbConnection } from "./middleware";
+import { labelSubtaskRouter } from "./label-subtask.router";
 import { komentarRouter } from "./komentar.router";
 import { eventRouter } from "./event.router";
 
@@ -12,6 +14,8 @@ indexRouter.use(checkDbConnection());
 
 indexRouter.use("/kategori-task", kategoriTaskRouter);
 indexRouter.use("/task", taskRouter);
+indexRouter.use("/label-task", labelTaskRouter);
 indexRouter.use("/komentar", komentarRouter);
 indexRouter.use("/subtask", subtaskRouter);
+indexRouter.use("/label-subtask", labelSubtaskRouter);
 indexRouter.use("/event", eventRouter);
