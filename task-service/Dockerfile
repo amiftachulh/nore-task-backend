@@ -4,10 +4,20 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install
+COPY prisma ./
+
+COPY .env ./
+
+COPY tsconfig.json ./
 
 COPY . .
 
-EXPOSE 5003
+RUN npm install
 
-CMD ["npm", "run", "dev"]
+RUN npx prisma generate
+
+# RUN npx prisma migrate dev
+
+EXPOSE 5000
+
+CMD [ "npm", "run", "dev" ]

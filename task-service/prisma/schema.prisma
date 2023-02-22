@@ -49,10 +49,12 @@ model Komentar {
 }
 
 model LabelTask {
-  id     String @id @default(uuid())
-  nama   String
-  taskId String @map("task_id")
-  task   Task   @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id      String @id @default(uuid())
+  nama    String
+  taskId  String @map("task_id")
+  task    Task   @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  bgColor String @map("bg_color") @db.VarChar(7)
+  color   String @db.VarChar(7)
 
   @@map("label_task")
 }
@@ -74,6 +76,8 @@ model LabelSubtask {
   nama      String
   subtaskId String  @map("subtask_id")
   subtask   Subtask @relation(fields: [subtaskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  bgColor   String  @map("bg_color") @db.VarChar(7)
+  color     String  @db.VarChar(7)
 
   @@map("label_subtask")
 }
