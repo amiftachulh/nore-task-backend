@@ -2,7 +2,11 @@ import { z } from "zod";
 
 export const loginSchema = z
   .object({
-    username: z.string().min(4).max(30),
+    username: z
+      .string()
+      .min(4)
+      .max(30)
+      .regex(/^[a-zA-Z0-9._]+$/),
     password: z.string().min(8).max(32),
   })
   .strict();

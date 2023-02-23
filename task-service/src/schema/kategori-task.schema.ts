@@ -8,11 +8,7 @@ export const kategoriTaskCreate = z
   })
   .strict();
 
-export const kategoriTaskUpdate = z
-  .object({
-    nama: z.string(),
-  })
-  .strict();
+export const kategoriTaskUpdate = kategoriTaskCreate.omit({ projectId: true });
 
 export type KategoriTaskCreate = z.infer<typeof kategoriTaskCreate>;
 export type KategoriTaskUpdate = z.infer<typeof kategoriTaskUpdate>;

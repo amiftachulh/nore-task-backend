@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { AnyZodObject } from "zod";
 import { prisma } from "../db/client";
 import { User } from "../types";
+import axios from "axios";
+import config from "../config";
 
 export function checkDbConnection() {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -26,14 +28,20 @@ export function validate(schema: AnyZodObject) {
   };
 }
 
-export type AuthorizedRequest = Request & { user: User };
-
-export function authorize() {
+export function authenticate() {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const header = req.header("X-User");
-    if (!header) return res.sendStatus(401);
-    const user = JSON.parse(header) as User;
-    (req as AuthorizedRequest).user = user;
-    return next();
+    try {
+      const response = await axios.get(`${config.api.auth}/auth/verify`, {
+        headers: {
+          Authorization: req.header("Authorization"),
+        },
+      });
+      (req as AuthorizedRequest).user = response.data;
+      return next();
+    } catch (error) {
+      return res.sendStatus(401);
+    }
   };
 }
+
+export type AuthorizedRequest = Request & { user: User };

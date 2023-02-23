@@ -11,10 +11,14 @@ import { registerUser } from "../service/user.service";
 
 export const authRouter = Router();
 
-authRouter.get("/", authenticate(), async (req: Request, res: Response) => {
-  const user = (req as AuthorizedRequest).user;
-  return res.status(200).send(user);
-});
+authRouter.get(
+  "/verify",
+  authenticate(),
+  async (req: Request, res: Response) => {
+    const user = (req as AuthorizedRequest).user;
+    return res.status(200).send(user);
+  }
+);
 
 authRouter.post(
   "/register",

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { checkDbConnection } from "./middleware";
+import { checkDbConnection, authenticate } from "./middleware";
 import { kategoriTaskRouter } from "./kategori-task.router";
 import { taskRouter } from "./task.router";
 import { labelTaskRouter } from "./label-task.router";
@@ -11,6 +11,7 @@ import { eventRouter } from "./event.router";
 export const indexRouter = Router();
 
 indexRouter.use(checkDbConnection());
+indexRouter.use(/^(?!.*event).*$/, authenticate());
 
 indexRouter.use("/kategori-task", kategoriTaskRouter);
 indexRouter.use("/task", taskRouter);
