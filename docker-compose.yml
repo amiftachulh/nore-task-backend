@@ -22,7 +22,7 @@ services:
       MYSQL_DATABASE: nore_task_auth
       MYSQL_ROOT_PASSWORD: root
       MYSQL_PASSWORD: root
-      MYSQL_USER: root
+      MYSQL_USER: admin
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     networks:
       - network
@@ -49,7 +49,7 @@ services:
       MYSQL_DATABASE: nore_task_main
       MYSQL_ROOT_PASSWORD: root
       MYSQL_PASSWORD: root
-      MYSQL_USER: root
+      MYSQL_USER: admin
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     networks:
       - network
@@ -76,7 +76,7 @@ services:
       MYSQL_DATABASE: nore_task_task
       MYSQL_ROOT_PASSWORD: root
       MYSQL_PASSWORD: root
-      MYSQL_USER: root
+      MYSQL_USER: admin
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     networks:
       - network
@@ -86,7 +86,7 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     ports:
-      - "5000:80"
+      - "5000:5000"
     networks:
       - network
     
