@@ -3,11 +3,7 @@ import { User as U, Role } from "@prisma/client";
 
 export const userCreate = z
   .object({
-    namaLengkap: z
-      .string()
-      .min(1)
-      .max(60)
-      .regex(/^[a-zA-Z .,]+$/),
+    namaLengkap: z.string().min(1).max(60),
     username: z
       .string()
       .min(4)
