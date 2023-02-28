@@ -26,12 +26,14 @@ const subtaskReturn = {
 };
 
 export async function getSubtaskById(
-  subtaskId: string
-): Promise<SubtaskReturn | null> {
-  return await prisma.subtask.findUnique({
-    where: { id: subtaskId },
+  taskId: string
+): Promise<SubtaskReturn[] | null> {
+  const subtask = await prisma.subtask.findMany({
+    where: { taskId: taskId },
     select: subtaskReturn,
   });
+  if (!subtask.length) return null;
+  return subtask;
 }
 
 export async function updateSubtaskById(
