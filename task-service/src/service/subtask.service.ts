@@ -23,6 +23,7 @@ const subtaskReturn = {
   userId: true,
   keterangan: true,
   poin: true,
+  labelSubtask: true,
 };
 
 export async function getSubtaskById(
