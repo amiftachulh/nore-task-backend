@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Client, Project as P } from "@prisma/client";
+import { Client, Project } from "@prisma/client";
 
 export const projectSchema = z.object({
   nama: z.string().min(1),
@@ -9,6 +9,7 @@ export const projectSchema = z.object({
 });
 
 export type ProjectSchema = z.infer<typeof projectSchema>;
-
-type Project = Omit<P, "clientId">;
-export type ProjectReturn = Project & { client: Client | null };
+export type ProjectReturn = Pick<
+  Project,
+  Exclude<keyof Project, "clientId">
+> & { client: Client | null };

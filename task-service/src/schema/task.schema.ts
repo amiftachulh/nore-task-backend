@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { KategoriTask, Task as T, Subtask } from "@prisma/client";
+import { KategoriTask, Task, Subtask } from "@prisma/client";
 
 export const taskSchema = z
   .object({
@@ -12,8 +12,9 @@ export const taskSchema = z
   .strict();
 
 export type TaskSchema = z.infer<typeof taskSchema>;
-
-type Task = Omit<T, "kategoriTaskId" | "index">;
-export type TaskReturn = Task & { kategoriTask: KategoriTask } & {
+export type TaskReturn = Pick<
+  Task,
+  Exclude<keyof Task, "kategoriTaskId" | "index">
+> & { kategoriTask: KategoriTask } & {
   subtask: any;
 };
