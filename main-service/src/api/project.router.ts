@@ -50,6 +50,6 @@ projectRouter.patch(
 projectRouter.delete("/:id", async (req: Request, res: Response) => {
   const projectId = req.params.id;
   const project = await deleteProjectById(projectId);
-  if (!project) return res.status(404).send("Project tidak ditemukan!");
+  if (!project) return res.status(400).send("Project gagal dihapus!");
   return res.status(200).send("Project berhasil dihapus");
 });

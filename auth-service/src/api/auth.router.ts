@@ -62,6 +62,6 @@ authRouter.delete("/logout", async (req: Request, res: Response) => {
   if (!refreshToken) return res.sendStatus(400);
   const user = await deleteRefreshToken(refreshToken);
   res.clearCookie("refreshToken");
-  if (!user) return res.status(404).send("User tidak ditemukan!");
+  if (!user) return res.status(400).send("Gagal logout!");
   return res.status(200).send("Berhasil logout");
 });

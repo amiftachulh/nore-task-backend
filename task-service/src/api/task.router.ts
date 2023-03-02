@@ -56,6 +56,6 @@ taskRouter.patch(
 taskRouter.delete("/:id", async (req: Request, res: Response) => {
   const taskId = req.params.id;
   const task = await deleteTaskById(taskId);
-  if (!task) return res.status(404).send("Task tidak ditemukan!");
+  if (!task) return res.status(400).send("Task gagal dihapus!");
   return res.status(200).send("Task berhasil dihapus");
 });

@@ -51,6 +51,6 @@ komentarRouter.delete("/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   const userId = (req as AuthorizedRequest).user.id;
   const komentar = await deleteKomentarById(id, userId);
-  if (!komentar) return res.status(400).send("Komentar tidak dapat dihapus!");
+  if (!komentar) return res.status(400).send("Komentar gagal dihapus!");
   return res.status(200).send("Komentar berhasil dihapus");
 });

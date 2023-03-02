@@ -14,12 +14,11 @@ export async function createKomentar(
   payload: KomentarCreate
 ): Promise<ResponseService<Komentar | null>> {
   try {
-    const createdAt = new Date().toISOString();
     const komentar = await prisma.komentar.create({
       data: {
         ...payload,
         userId,
-        createdAt,
+        createdAt: new Date().toISOString(),
       },
     });
     return {
@@ -51,7 +50,7 @@ export async function getKomentarByTaskId(
     };
   }
   try {
-    const promises = komentar.map(async k => {
+    const promises = komentar.map(async (k) => {
       const response = await axios.get(
         `${config.api.auth}/event/user/${k.userId}`
       );
@@ -72,9 +71,9 @@ export async function getKomentarByTaskId(
     };
   } catch (error) {
     return {
-      code: 502,
+      code: 500,
       data: null,
-      err: "Tidak bisa mencapai auth service!",
+      err: "Kesalahan internal server!",
     };
   }
 }
@@ -90,10 +89,12 @@ export async function updateKomentarById(
   if (!komentar) return null;
   if (userId !== komentar.userId) return null;
   try {
-    const updatedAt = new Date().toISOString();
     return await prisma.komentar.update({
       where: { id: id },
-      data: { ...payload, updatedAt },
+      data: {
+        ...payload,
+        updatedAt: new Date().toISOString(),
+      },
     });
   } catch (error) {
     return null;

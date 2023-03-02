@@ -107,7 +107,7 @@ export async function updatePassword(
     return {
       code: 400,
       data: null,
-      err: error,
+      err: "Password gagal diganti!",
     };
   }
 }

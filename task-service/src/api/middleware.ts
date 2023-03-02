@@ -12,7 +12,7 @@ export function checkDbConnection() {
       return next();
     } catch (error) {
       console.log("Error: Tidak bisa terhubung ke database");
-      return res.status(503).send({ message: "Service tidak tersedia" });
+      return res.status(503).send("Layanan tidak tersedia!");
     }
   };
 }

@@ -43,7 +43,7 @@ roleRouter.patch(
     const roleId = parseInt(req.params.id);
     const payload = req.body as Role;
     const role = await updateRoleById(roleId, payload);
-    if (!role) return res.status(404).send("Role tidak ditemukan!");
+    if (!role) return res.status(400).send("Role gagal diupdate!");
     return res.status(200).send("Role berhasil diupdate");
   }
 );
@@ -51,6 +51,6 @@ roleRouter.patch(
 roleRouter.delete("/:id", async (req: Request, res: Response) => {
   const roleId = parseInt(req.params.id);
   const role = await deleteRoleById(roleId);
-  if (!role) return res.status(404).send("Role tidak ditemukan!");
+  if (!role) return res.status(400).send("Role gagal dihapus!");
   return res.status(200).send("Role berhasil dihapus");
 });

@@ -63,7 +63,7 @@ clientRouter.delete(
   async (req: Request, res: Response) => {
     const clientId = req.params.id;
     const client = await deleteClientById(clientId);
-    if (!client) return res.status(404).send("Client tidak ditemukan!");
+    if (!client) return res.status(400).send("Client gagal dihapus!");
     return res.status(200).send("Client berhasil dihapus");
   }
 );

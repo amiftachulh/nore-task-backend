@@ -12,7 +12,7 @@ export function checkDbConnection() {
       return next();
     } catch (error) {
       console.log("Error: Tidak bisa terhubung ke database");
-      return res.status(503).send({ message: "Service tidak tersedia" });
+      return res.status(503).send("Layanan tidak tersedia!");
     }
   };
 }
@@ -23,7 +23,7 @@ export function validate(schema: AnyZodObject) {
       await schema.parseAsync(req.body);
       return next();
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).send(error);
     }
   };
 }

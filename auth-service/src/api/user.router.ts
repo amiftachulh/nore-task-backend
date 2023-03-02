@@ -55,6 +55,6 @@ userRouter.patch(
 userRouter.delete("/:id", async (req: Request, res: Response) => {
   const userId = req.params.id;
   const user = await deleteUserById(userId);
-  if (!user) return res.status(404).send("User tidak ditemukan!");
+  if (!user) return res.status(400).send("User gagal dihapus!");
   return res.status(200).send("User berhasil dihapus");
 });

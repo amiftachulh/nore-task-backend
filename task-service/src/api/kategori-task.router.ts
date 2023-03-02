@@ -65,6 +65,6 @@ kategoriTaskRouter.delete("/:id", async (req: Request, res: Response) => {
   const kategoriTaskId = req.params.id;
   const kategoriTask = await deleteKategoriTaskById(kategoriTaskId);
   if (!kategoriTask)
-    return res.status(404).send("Kategori task tidak ditemukan!");
+    return res.status(400).send("Kategori task gagal dihapus!");
   return res.status(200).send("Kategori task berhasil dihapus");
 });
