@@ -60,12 +60,7 @@ export async function deleteProjectById(
 ): Promise<Project | null> {
   try {
     await axios.delete(
-      `${config.api.task}/event/delete-kategori-task/${projectId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${config.auth.serviceToken}`,
-        },
-      }
+      `${config.api.task}/event/delete-kategori-task/${projectId}`
     );
     return await prisma.project.delete({
       where: { id: projectId },

@@ -24,7 +24,7 @@ model Client {
 model Project {
   id           String  @id @default(uuid())
   nama         String
-  client       Client? @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  client       Client? @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   clientId     String? @map("client_id")
   jenisLayanan String  @map("jenis_layanan")
   keterangan   String? @db.TinyText
