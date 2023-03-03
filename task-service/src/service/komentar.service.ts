@@ -109,12 +109,14 @@ export async function deleteKomentarById(
     where: { id: id },
   });
   if (!komentar) return null;
-  if (user.id !== komentar.userId || user.role?.nama === "Admin") return null;
-  try {
-    return await prisma.komentar.delete({
-      where: { id: id },
-    });
-  } catch (error) {
-    return null;
+  if (user.role?.nama === "Admin" || user.id === komentar.userId) {
+    try {
+      return await prisma.komentar.delete({
+        where: { id: id },
+      });
+    } catch (error) {
+      return null;
+    }
   }
+  return null;
 }
