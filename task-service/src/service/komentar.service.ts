@@ -5,7 +5,7 @@ import {
   KomentarReturn,
   KomentarUpdate,
 } from "../schema/komentar.schema";
-import { ResponseService } from "../types";
+import { ResponseService, User } from "../types";
 import axios from "axios";
 import config from "../config";
 
@@ -103,13 +103,13 @@ export async function updateKomentarById(
 
 export async function deleteKomentarById(
   id: string,
-  userId: string
+  user: User
 ): Promise<Komentar | null> {
   const komentar = await prisma.komentar.findUnique({
     where: { id: id },
   });
   if (!komentar) return null;
-  if (userId !== komentar.userId) return null;
+  if (user.id !== komentar.userId || user.role?.nama === "Admin") return null;
   try {
     return await prisma.komentar.delete({
       where: { id: id },
