@@ -3,16 +3,17 @@ import { Project } from "@prisma/client";
 import { ProjectSchema, ProjectReturn } from "../schema/project.schema";
 import axios from "axios";
 import config from "../config";
+import { ResponseService } from "../types";
+import { makeResponse } from "../utils";
 
-export async function createProject(
-  payload: ProjectSchema
-): Promise<Project | null> {
+export async function createProject(payload: ProjectSchema): Promise<ResponseService<null>> {
   try {
-    return await prisma.project.create({
+    await prisma.project.create({
       data: payload,
     });
+    return makeResponse(201, "Project berhasil dibuat", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "Project gagal dibuat", null);
   }
 }
 
@@ -24,48 +25,53 @@ const projectReturn = {
   keterangan: true,
 };
 
-export async function getAllProjects(): Promise<ProjectReturn[] | null> {
+export async function getAllProjects(): Promise<ResponseService<ProjectReturn[] | null>> {
   const projects = await prisma.project.findMany({
     select: projectReturn,
   });
-  if (!projects.length) return null;
-  return projects;
+
+  if (!projects.length) return makeResponse(404, "Project tidak ada", null);
+  return makeResponse(200, "Success", projects);
 }
 
 export async function getProjectById(
   projectId: string
-): Promise<ProjectReturn | null> {
-  return await prisma.project.findFirst({
+): Promise<ResponseService<ProjectReturn | null>> {
+  const project = await prisma.project.findFirst({
     where: { id: projectId },
     select: projectReturn,
   });
+
+  if (!project) return makeResponse(404, "Project tidak ditemukan", null);
+  return makeResponse(200, "Success", project);
 }
 
 export async function updateProjectById(
   projectId: string,
   payload: ProjectSchema
-): Promise<Project | null> {
+): Promise<ResponseService<null>> {
   try {
-    return await prisma.project.update({
+    await prisma.project.update({
       where: { id: projectId },
       data: payload,
     });
+    return makeResponse(200, "Project berhasil diperbarui", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "Project gagal diperbarui", null);
   }
 }
 
-export async function deleteProjectById(
-  projectId: string
-): Promise<Project | null> {
+export async function deleteProjectById(projectId: string): Promise<ResponseService<any>> {
+  await axios
+    .post(`${config.api.task}/event/delete-kategori-task`, { projectIds: [...projectId] })
+    .catch((error) => makeResponse(500, "Terjadi kesalahan, silakan coba lagi nanti", error));
+
   try {
-    await axios.delete(
-      `${config.api.task}/event/delete-kategori-task/${projectId}`
-    );
-    return await prisma.project.delete({
+    await prisma.project.delete({
       where: { id: projectId },
     });
+    return makeResponse(200, "Project berhasil dihapus", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "Project gagal dihapus", null);
   }
 }

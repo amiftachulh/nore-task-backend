@@ -15,24 +15,16 @@ import { validate } from "./middleware";
 
 export const labelSubtaskRouter = Router();
 
-labelSubtaskRouter.post(
-  "/",
-  validate(labelSubtaskCreate),
-  async (req: Request, res: Response) => {
-    const payload = req.body as LabelSubtaskCreate;
-    const labelSubtask = await createLabelSubtask(payload);
-    if (!labelSubtask)
-      return res.status(400).send("Label subtask gagal dibuat!");
-    return res.status(201).send("Label subtask berhasil dibuat");
-  }
-);
+labelSubtaskRouter.post("/", validate(labelSubtaskCreate), async (req: Request, res: Response) => {
+  const payload = req.body as LabelSubtaskCreate;
+  const result = await createLabelSubtask(payload);
+  return res.status(result.code).send(result);
+});
 
 labelSubtaskRouter.get("/:subtaskId", async (req: Request, res: Response) => {
   const subtaskId = req.params.subtaskId;
-  const labelSubtask = await getLabelSubtaskBySubtaskId(subtaskId);
-  if (!labelSubtask)
-    return res.status(404).send("Label subtask tidak ditemukan!");
-  return res.status(200).send(labelSubtask);
+  const result = await getLabelSubtaskBySubtaskId(subtaskId);
+  return res.status(result.code).send(result);
 });
 
 labelSubtaskRouter.patch(
@@ -41,17 +33,13 @@ labelSubtaskRouter.patch(
   async (req: Request, res: Response) => {
     const id = req.params.id;
     const payload = req.body as LabelSubtaskUpdate;
-    const labelSubtask = await updateLabelSubtaskById(id, payload);
-    if (!labelSubtask)
-      return res.status(400).send("Label subtask gagal diupdate!");
-    return res.status(200).send("Label subtask berhasil diupdate");
+    const result = await updateLabelSubtaskById(id, payload);
+    return res.status(result.code).send(result);
   }
 );
 
 labelSubtaskRouter.delete("/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
-  const labelSubtask = await deleteLabelSubtaskById(id);
-  if (!labelSubtask)
-    return res.status(400).send("Label subtask gagal dihapus!");
-  return res.status(200).send("Label subtask berhasil dihapus");
+  const result = await deleteLabelSubtaskById(id);
+  return res.status(result.code).send(result);
 });

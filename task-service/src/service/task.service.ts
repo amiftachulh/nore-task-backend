@@ -2,20 +2,26 @@ import { prisma } from "../db/client";
 import { Task } from "@prisma/client";
 import { BoardSchema } from "../schema/board.schema";
 import { TaskReturn, TaskSchema } from "../schema/task.schema";
+import { ResponseService } from "../types";
+import { makeResponse } from "../utils";
 
-export async function createTask(payload: TaskSchema): Promise<Task | null> {
-  const task = await prisma.task.aggregate({
-    where: { kategoriTaskId: payload.kategoriTaskId },
-    _max: { index: true },
-  });
-  const index = task._max.index !== null ? task._max.index + 1 : 0;
-
+export async function createTask(payload: TaskSchema): Promise<ResponseService<null>> {
   try {
-    return await prisma.task.create({
-      data: { ...payload, index },
+    await prisma.$transaction(async (tx) => {
+      const task = await tx.task.aggregate({
+        where: { kategoriTaskId: payload.kategoriTaskId },
+        _max: { index: true },
+      });
+
+      const index = task._max.index !== null ? task._max.index + 1 : 0;
+
+      await tx.task.create({
+        data: { ...payload, index },
+      });
     });
+    return makeResponse(201, "Task berhasil dibuat", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "Task gagal dibuat", null);
   }
 }
 
@@ -29,53 +35,58 @@ export const taskReturn = {
   subtask: true,
 };
 
-export async function getTaskById(taskId: string): Promise<TaskReturn | null> {
-  return await prisma.task.findUnique({
+export async function getTaskById(taskId: string): Promise<ResponseService<TaskReturn | null>> {
+  const task = await prisma.task.findUnique({
     where: { id: taskId },
     select: taskReturn,
   });
+
+  if (!task) return makeResponse(404, "Task tidak ditemukan", null);
+  return makeResponse(200, "Success", task);
 }
 
 export async function updateTaskById(
   taskId: string,
   payload: TaskSchema
-): Promise<Task | null> {
+): Promise<ResponseService<null>> {
   try {
-    return await prisma.task.update({
+    await prisma.task.update({
       where: { id: taskId },
       data: payload,
     });
+    return makeResponse(200, "Task berhasil diperbarui", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "Task gagal diperbarui", null);
   }
 }
 
-export async function swapTask(board: BoardSchema): Promise<boolean> {
-  let error: any;
+export async function swapTask(board: BoardSchema): Promise<ResponseService<null>> {
   const columns = board.columns;
-  columns.forEach(column => {
-    const columnId = column.id;
-    column.cards.forEach(async (card, index) => {
-      try {
-        await prisma.task.update({
-          where: { id: card.id },
-          data: { kategoriTaskId: columnId, index: index },
-        });
-      } catch (error) {
-        error = error;
-      }
-    });
-  });
-  if (error) return false;
-  return true;
+
+  try {
+    await prisma.$transaction(
+      columns.flatMap((column) =>
+        column.cards.map((card, index) =>
+          prisma.task.update({
+            where: { id: card.id },
+            data: { kategoriTaskId: column.id, index },
+          })
+        )
+      )
+    );
+    return makeResponse(200, "Task berhasil ditukar", null);
+  } catch (error) {
+    return makeResponse(400, "Task gagal ditukar", null);
+  }
 }
 
-export async function deleteTaskById(taskId: string): Promise<Task | null> {
+export async function deleteTaskById(taskId: string): Promise<ResponseService<null>> {
   try {
-    return await prisma.task.delete({
+    await prisma.task.delete({
       where: { id: taskId },
     });
+    return makeResponse(200, "Task berhasil dihapus", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "Task gagal dihapus", null);
   }
 }

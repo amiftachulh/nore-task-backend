@@ -11,9 +11,9 @@ datasource db {
 }
 
 model KategoriTask {
-  id        String @id @default(uuid())
+  id        String @id @default(uuid()) @db.VarChar(36)
   nama      String
-  projectId String @map("project_id")
+  projectId String @map("project_id") @db.VarChar(36)
   index     Int
   task      Task[]
 
@@ -21,13 +21,13 @@ model KategoriTask {
 }
 
 model Task {
-  id             String       @id @default(uuid())
+  id             String       @id @default(uuid()) @db.VarChar(36)
   nama           String
   kategoriTask   KategoriTask @relation(fields: [kategoriTaskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  kategoriTaskId String       @map("kategori_task_id")
+  kategoriTaskId String       @map("kategori_task_id") @db.VarChar(36)
   kebutuhan      String       @db.Text
   prioritas      String
-  attachment     String
+  attachment     String       @db.Text
   index          Int
   subtask        Subtask[]
   komentar       Komentar[]
@@ -37,10 +37,10 @@ model Task {
 }
 
 model Komentar {
-  id        String    @id @default(uuid())
-  taskId    String    @map("task_id")
+  id        String    @id @default(uuid()) @db.VarChar(36)
+  taskId    String    @map("task_id") @db.VarChar(36)
   task      Task      @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  userId    String    @map("user_id")
+  userId    String    @map("user_id") @db.VarChar(36)
   konten    String    @db.VarChar(500)
   createdAt DateTime  @map("created_at")
   updatedAt DateTime? @map("updated_at")
@@ -49,9 +49,9 @@ model Komentar {
 }
 
 model LabelTask {
-  id      String @id @default(uuid())
+  id      String @id @default(uuid()) @db.VarChar(36)
   nama    String
-  taskId  String @map("task_id")
+  taskId  String @map("task_id") @db.VarChar(36)
   task    Task   @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   bgColor String @map("bg_color") @db.VarChar(7)
   color   String @db.VarChar(7)
@@ -60,11 +60,11 @@ model LabelTask {
 }
 
 model Subtask {
-  id           String         @id @default(uuid())
+  id           String         @id @default(uuid()) @db.VarChar(36)
   task         Task           @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  taskId       String         @map("task_id")
-  userId       String?        @map("user_id")
-  keterangan   String
+  taskId       String         @map("task_id") @db.VarChar(36)
+  userId       String?        @map("user_id") @db.VarChar(36)
+  keterangan   String         @db.Text
   poin         Int            @default(1)
   labelSubtask LabelSubtask[]
 
@@ -72,9 +72,9 @@ model Subtask {
 }
 
 model LabelSubtask {
-  id        String  @id @default(uuid())
+  id        String  @id @default(uuid()) @db.VarChar(36)
   nama      String
-  subtaskId String  @map("subtask_id")
+  subtaskId String  @map("subtask_id") @db.VarChar(36)
   subtask   Subtask @relation(fields: [subtaskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   bgColor   String  @map("bg_color") @db.VarChar(7)
   color     String  @db.VarChar(7)

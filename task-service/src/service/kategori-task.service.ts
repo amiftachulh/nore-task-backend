@@ -1,5 +1,4 @@
 import { prisma } from "../db/client";
-import { KategoriTask } from "@prisma/client";
 import { BoardSchema } from "../schema/board.schema";
 import {
   KategoriTaskReturn,
@@ -8,23 +7,34 @@ import {
 } from "../schema/kategori-task.schema";
 import config from "../config";
 import axios from "axios";
+import { ResponseService } from "../types";
+import { makeResponse } from "../utils";
 
 export async function createKategoriTask(
   payload: KategoriTaskCreate
-): Promise<KategoriTask | null> {
+): Promise<ResponseService<null>> {
   try {
     await axios.get(`${config.api.main}/event/project/${payload.projectId}`);
-    const kategoriTask = await prisma.kategoriTask.aggregate({
-      where: { projectId: payload.projectId },
-      _max: { index: true },
-    });
-    const index =
-      kategoriTask._max.index !== null ? kategoriTask._max.index + 1 : 0;
-    return await prisma.kategoriTask.create({
-      data: { ...payload, index: index },
-    });
   } catch (error) {
-    return null;
+    return makeResponse(500, "Terjadi kesalahan, silakan coba lagi nanti", null);
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const kategoriTask = await tx.kategoriTask.aggregate({
+        where: { projectId: payload.projectId },
+        _max: { index: true },
+      });
+
+      const index = kategoriTask._max.index !== null ? kategoriTask._max.index + 1 : 0;
+
+      await tx.kategoriTask.create({
+        data: { ...payload, index },
+      });
+    });
+    return makeResponse(201, "Kategori task berhasil dibuat", null);
+  } catch (error) {
+    return makeResponse(400, "Kategori task gagal dibuat", null);
   }
 }
 
@@ -38,71 +48,71 @@ export const kategoriTaskReturn = {
 
 export async function getKategoriTaskByProjectId(
   projectId: string
-): Promise<KategoriTaskReturn[] | null> {
+): Promise<ResponseService<KategoriTaskReturn[] | null>> {
   const kategoriTask = await prisma.kategoriTask.findMany({
-    where: { projectId: projectId },
+    where: { projectId },
     select: kategoriTaskReturn,
   });
-  if (!kategoriTask.length) return null;
-  return kategoriTask;
+
+  if (!kategoriTask.length)
+    return makeResponse(404, "Kategori task di project ini tidak ada", null);
+  return makeResponse(200, "Success", kategoriTask);
 }
 
 export async function updateKategoriTaskById(
-  kategoriTaskId: string,
+  id: string,
   payload: KategoriTaskUpdate
-): Promise<KategoriTask | null> {
+): Promise<ResponseService<null>> {
   try {
-    return await prisma.kategoriTask.update({
-      where: { id: kategoriTaskId },
+    await prisma.kategoriTask.update({
+      where: { id },
       data: payload,
     });
+    return makeResponse(200, "Kategori task berhasil diperbarui", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "Kategori task gagal diperbarui", null);
   }
 }
 
-export async function swapKategoriTask(board: BoardSchema): Promise<boolean> {
-  let error: any;
+export async function swapKategoriTask(board: BoardSchema): Promise<ResponseService<null>> {
   const columns = board.columns;
-  columns.forEach(async (column, index) => {
-    try {
-      await prisma.kategoriTask.update({
-        where: { id: column.id },
-        data: { index: index },
-      });
-    } catch (error) {
-      error = error;
-    }
-  });
-  if (error) return false;
-  return true;
+
+  try {
+    await prisma.$transaction(
+      columns.map((column, index) =>
+        prisma.kategoriTask.update({
+          where: { id: column.id },
+          data: { index },
+        })
+      )
+    );
+    return makeResponse(200, "Kategori task berhasil ditukar", null);
+  } catch (error) {
+    return makeResponse(400, "Kategori task gagal ditukar", null);
+  }
 }
 
-export async function deleteKategoriTaskById(
-  kategoriTaskId: string
-): Promise<KategoriTask | null> {
+export async function deleteKategoriTaskById(id: string): Promise<ResponseService<null>> {
   try {
-    return await prisma.kategoriTask.delete({
-      where: { id: kategoriTaskId },
+    await prisma.kategoriTask.delete({
+      where: { id },
     });
+    return makeResponse(200, "Kategori task berhasil dihapus", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "Kategori task gagal dihapus", null);
   }
 }
 
 export async function deleteKategoriTaskByProjectId(
-  projectId: string
-): Promise<boolean> {
-  const kategoriTask = await prisma.kategoriTask.findFirst({
-    where: { projectId: projectId },
+  projectIds: string[]
+): Promise<ResponseService<null>> {
+  await prisma.kategoriTask.deleteMany({
+    where: {
+      projectId: {
+        in: projectIds,
+      },
+    },
   });
-  if (!kategoriTask) return true;
-  try {
-    await prisma.kategoriTask.deleteMany({
-      where: { projectId: projectId },
-    });
-    return true;
-  } catch (error) {
-    return false;
-  }
+
+  return makeResponse(200, "Success", null);
 }

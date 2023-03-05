@@ -1,8 +1,14 @@
+export type ResponseService<T> = {
+  code: number;
+  message: string;
+  data: T;
+};
+
 export type User = {
   id: string;
-  nama_lengkap: string;
+  namaLengkap: string;
   username: string;
-  nomor_hp: string;
+  nomorHp: string;
   divisi: string;
   role: Role | null;
 };

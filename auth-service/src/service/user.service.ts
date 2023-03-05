@@ -5,19 +5,26 @@ import config from "../config";
 import axios from "axios";
 import { ChangePasswordSchema } from "../schema/auth.schema";
 import { ResponseService } from "../types";
+import { makeResponse } from "../utils";
 
-export async function registerUser(payload: UserCreate): Promise<any | null> {
+export async function register(payload: UserCreate): Promise<ResponseService<null>> {
   const user = await prisma.user.findMany({
     where: { username: payload.username },
   });
-  if (user.length) return null;
-  const hashedPassword = await bcrypt.hash(payload.password, 10);
-  return await prisma.user.create({
-    data: { ...payload, password: hashedPassword },
+
+  if (user.length) return makeResponse(409, "Username sudah diambil", null);
+
+  await prisma.user.create({
+    data: {
+      ...payload,
+      password: await bcrypt.hash(payload.password, 10),
+    },
   });
+
+  return makeResponse(201, "Berhasil mendaftar", null);
 }
 
-export const omitUserPassword = {
+export const userWithoutPassword = {
   id: true,
   namaLengkap: true,
   username: true,
@@ -26,102 +33,89 @@ export const omitUserPassword = {
   role: true,
 };
 
-export async function getAllUsers(): Promise<UserReturn[] | null> {
+export async function getAllUsers(): Promise<ResponseService<UserReturn[] | null>> {
   const users = await prisma.user.findMany({
-    select: omitUserPassword,
+    select: userWithoutPassword,
   });
-  if (!users.length) return null;
-  return users;
+
+  if (!users.length) return makeResponse(404, "User tidak ada", null);
+  return makeResponse(200, "Success", users);
 }
 
-export async function getUserById(userId: string): Promise<UserReturn | null> {
-  return await prisma.user.findUnique({
+export async function getUserById(userId: string): Promise<ResponseService<UserReturn | null>> {
+  const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: omitUserPassword,
+    select: userWithoutPassword,
   });
+
+  if (!user) return makeResponse(404, "User tidak ditemukan", null);
+  return makeResponse(200, "Success", user);
 }
 
 export async function updateUserById(
   userId: string,
   payload: UserUpdate
-): Promise<UserReturn | null> {
+): Promise<ResponseService<any>> {
   try {
     const { password, ...userData } = payload;
+
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
-      return await prisma.user.update({
+      await prisma.user.update({
         where: { id: userId },
         data: { ...payload, password: hashedPassword },
-        select: omitUserPassword,
       });
+
+      return makeResponse(200, "User berhasil diperbarui", null);
     }
-    return await prisma.user.update({
+
+    await prisma.user.update({
       where: { id: userId },
       data: { ...userData },
-      select: omitUserPassword,
     });
+
+    return makeResponse(200, "User berhasil diperbarui", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "User gagal diperbarui", error);
   }
 }
 
 export async function updatePassword(
   payload: ChangePasswordSchema
-): Promise<ResponseService<UserReturn | null>> {
+): Promise<ResponseService<null>> {
   const { id, currentPassword, newPassword, confirmNewPassword } = payload;
   const user = await prisma.user.findUnique({
     where: { id: id },
   });
-  if (!user)
-    return {
-      code: 404,
-      data: null,
-      err: "User tidak ditemukan!",
-    };
+
+  if (!user) return makeResponse(404, "User tidak ditemukan", null);
+
   const compare = await bcrypt.compare(currentPassword, user.password);
-  if (!compare)
-    return {
-      code: 400,
-      data: null,
-      err: "Password salah!",
-    };
+  if (!compare) return makeResponse(400, "Password lama yang Anda masukkan salah", null);
   if (newPassword !== confirmNewPassword)
-    return {
-      code: 400,
-      data: null,
-      err: "Password dan konfirmasi password tidak sama!",
-    };
+    return makeResponse(400, "Password baru dan konfirmasi password baru tidak cocok", null);
+
   try {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    const updatedUser = await prisma.user.update({
+    await prisma.user.update({
       where: { id: id },
       data: { password: hashedPassword },
-      select: omitUserPassword,
     });
-    return {
-      code: 200,
-      data: updatedUser,
-      err: null,
-    };
+
+    return makeResponse(200, "Password berhasil diganti", null);
   } catch (error) {
-    return {
-      code: 400,
-      data: null,
-      err: "Password gagal diganti!",
-    };
+    return makeResponse(400, "Password gagal diganti", null);
   }
 }
 
-export async function deleteUserById(
-  userId: string
-): Promise<UserReturn | null> {
+export async function deleteUserById(userId: string): Promise<ResponseService<null>> {
   try {
     await axios.patch(`${config.api.task}/event/null-user/${userId}`);
-    return await prisma.user.delete({
+    await prisma.user.delete({
       where: { id: userId },
-      select: omitUserPassword,
     });
+    return makeResponse(200, "User berhasil dihapus", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "User gagal dihapus", null);
   }
 }

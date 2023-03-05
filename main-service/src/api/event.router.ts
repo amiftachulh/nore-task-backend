@@ -5,7 +5,6 @@ export const eventRouter = Router();
 
 eventRouter.get("/project/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
-  const project = await getProjectById(id);
-  if (!project) return res.sendStatus(404);
-  return res.sendStatus(200);
+  const result = await getProjectById(id);
+  return res.status(result.code).send(result);
 });

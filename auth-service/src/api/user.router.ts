@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { UserUpdate, userUpdate } from "../schema/user.schema";
-import { changePasswordAuth, validate } from "./middleware";
+import { authorize, changePasswordAuth, validate } from "./middleware";
 import {
   getAllUsers,
   getUserById,
@@ -8,24 +8,19 @@ import {
   deleteUserById,
   updatePassword,
 } from "../service/user.service";
-import {
-  ChangePasswordSchema,
-  changePasswordSchema,
-} from "../schema/auth.schema";
+import { ChangePasswordSchema, changePasswordSchema } from "../schema/auth.schema";
 
 export const userRouter = Router();
 
 userRouter.get("/", async (req: Request, res: Response) => {
-  const users = await getAllUsers();
-  if (!users) return res.status(404).send("User tidak ditemukan!");
-  return res.status(200).send(users);
+  const result = await getAllUsers();
+  return res.status(result.code).send(result);
 });
 
 userRouter.get("/:id", async (req: Request, res: Response) => {
-  const userId = req.params.id;
-  const user = await getUserById(userId);
-  if (!user) return res.status(404).send("User tidak ditemukan!");
-  return res.status(200).send(user);
+  const id = req.params.id;
+  const result = await getUserById(id);
+  return res.status(result.code).send(result);
 });
 
 userRouter.patch(
@@ -34,27 +29,20 @@ userRouter.patch(
   changePasswordAuth(),
   async (req: Request, res: Response) => {
     const payload = req.body as ChangePasswordSchema;
-    const user = await updatePassword(payload);
-    if (user.err) return res.status(user.code).send(user.err);
-    return res.status(user.code).send("Password berhasil diganti");
+    const result = await updatePassword(payload);
+    return res.status(result.code).send(result);
   }
 );
 
-userRouter.patch(
-  "/:id",
-  validate(userUpdate),
-  async (req: Request, res: Response) => {
-    const userId = req.params.id;
-    const payload = req.body as UserUpdate;
-    const user = await updateUserById(userId, payload);
-    if (!user) return res.status(400).send("User gagal diupdate!");
-    return res.status(200).send("User berhasil diupdate");
-  }
-);
+userRouter.patch("/:id", validate(userUpdate), async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const payload = req.body as UserUpdate;
+  const result = await updateUserById(id, payload);
+  return res.status(result.code).send(result);
+});
 
-userRouter.delete("/:id", async (req: Request, res: Response) => {
-  const userId = req.params.id;
-  const user = await deleteUserById(userId);
-  if (!user) return res.status(400).send("User gagal dihapus!");
-  return res.status(200).send("User berhasil dihapus");
+userRouter.delete("/:id", authorize(["Admin"]), async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await deleteUserById(id);
+  return res.status(result.code).send(result);
 });

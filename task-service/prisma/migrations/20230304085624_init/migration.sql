@@ -1,8 +1,8 @@
 -- CreateTable
 CREATE TABLE `kategori_task` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` VARCHAR(36) NOT NULL,
     `nama` VARCHAR(191) NOT NULL,
-    `project_id` VARCHAR(191) NOT NULL,
+    `project_id` VARCHAR(36) NOT NULL,
     `index` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -10,12 +10,12 @@ CREATE TABLE `kategori_task` (
 
 -- CreateTable
 CREATE TABLE `task` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` VARCHAR(36) NOT NULL,
     `nama` VARCHAR(191) NOT NULL,
-    `kategori_task_id` VARCHAR(191) NOT NULL,
+    `kategori_task_id` VARCHAR(36) NOT NULL,
     `kebutuhan` TEXT NOT NULL,
     `prioritas` VARCHAR(191) NOT NULL,
-    `attachment` VARCHAR(191) NOT NULL,
+    `attachment` TEXT NOT NULL,
     `index` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -23,9 +23,9 @@ CREATE TABLE `task` (
 
 -- CreateTable
 CREATE TABLE `komentar` (
-    `id` VARCHAR(191) NOT NULL,
-    `task_id` VARCHAR(191) NOT NULL,
-    `user_id` VARCHAR(191) NOT NULL,
+    `id` VARCHAR(36) NOT NULL,
+    `task_id` VARCHAR(36) NOT NULL,
+    `user_id` VARCHAR(36) NOT NULL,
     `konten` VARCHAR(500) NOT NULL,
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
@@ -35,9 +35,9 @@ CREATE TABLE `komentar` (
 
 -- CreateTable
 CREATE TABLE `label_task` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` VARCHAR(36) NOT NULL,
     `nama` VARCHAR(191) NOT NULL,
-    `task_id` VARCHAR(191) NOT NULL,
+    `task_id` VARCHAR(36) NOT NULL,
     `bg_color` VARCHAR(7) NOT NULL,
     `color` VARCHAR(7) NOT NULL,
 
@@ -46,10 +46,10 @@ CREATE TABLE `label_task` (
 
 -- CreateTable
 CREATE TABLE `subtask` (
-    `id` VARCHAR(191) NOT NULL,
-    `task_id` VARCHAR(191) NOT NULL,
-    `user_id` VARCHAR(191) NULL,
-    `keterangan` VARCHAR(191) NOT NULL,
+    `id` VARCHAR(36) NOT NULL,
+    `task_id` VARCHAR(36) NOT NULL,
+    `user_id` VARCHAR(36) NULL,
+    `keterangan` TEXT NOT NULL,
     `poin` INTEGER NOT NULL DEFAULT 1,
 
     PRIMARY KEY (`id`)
@@ -57,9 +57,9 @@ CREATE TABLE `subtask` (
 
 -- CreateTable
 CREATE TABLE `label_subtask` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` VARCHAR(36) NOT NULL,
     `nama` VARCHAR(191) NOT NULL,
-    `subtask_id` VARCHAR(191) NOT NULL,
+    `subtask_id` VARCHAR(36) NOT NULL,
     `bg_color` VARCHAR(7) NOT NULL,
     `color` VARCHAR(7) NOT NULL,
 

@@ -1,13 +1,13 @@
 -- CreateTable
 CREATE TABLE `user` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` VARCHAR(36) NOT NULL,
     `nama_lengkap` VARCHAR(60) NOT NULL,
     `username` VARCHAR(30) NOT NULL,
-    `password` VARCHAR(64) NOT NULL,
+    `password` VARCHAR(72) NOT NULL,
     `nomor_hp` VARCHAR(15) NOT NULL,
     `divisi` VARCHAR(191) NOT NULL,
     `role_id` INTEGER NULL,
-    `refresh_token` VARCHAR(191) NULL,
+    `refresh_token` VARCHAR(400) NULL,
 
     UNIQUE INDEX `user_username_key`(`username`),
     PRIMARY KEY (`id`)
