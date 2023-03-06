@@ -17,9 +17,8 @@ clientRouter.post(
   authorize(["Admin"]),
   async (req: Request, res: Response) => {
     const payload = req.body as ClientSchema;
-    const client = await createClient(payload);
-    if (!client) return res.status(400).send("Client gagal dibuat!");
-    return res.status(201).send("Client berhasil dibuat");
+    const result = await createClient(payload);
+    return res.status(result.code).send(result);
   }
 );
 
@@ -27,9 +26,8 @@ clientRouter.get(
   "/",
   authorize(["Admin", "Project Manager"]),
   async (req: Request, res: Response) => {
-    const clients = await getAllClients();
-    if (!clients) return res.status(404).send("Client tidak ditemukan!");
-    return res.status(200).send(clients);
+    const result = await getAllClients();
+    return res.status(result.code).send(result);
   }
 );
 
@@ -37,10 +35,9 @@ clientRouter.get(
   "/:id",
   authorize(["Admin", "Project Manager"]),
   async (req: Request, res: Response) => {
-    const clientId = req.params.id;
-    const client = await getClientById(clientId);
-    if (!client) return res.status(404).send("Client tidak ditemukan!");
-    return res.status(200).send(client);
+    const id = req.params.id;
+    const result = await getClientById(id);
+    return res.status(result.code).send(result);
   }
 );
 
@@ -49,21 +46,15 @@ clientRouter.patch(
   validate(clientSchema),
   authorize(["Admin"]),
   async (req: Request, res: Response) => {
-    const clientId = req.params.id;
+    const id = req.params.id;
     const payload = req.body as ClientSchema;
-    const client = await updateClientById(clientId, payload);
-    if (!client) return res.status(400).send("Client gagal diupdate!");
-    return res.status(200).send("Client berhasil diupdate");
+    const result = await updateClientById(id, payload);
+    return res.status(result.code).send(result);
   }
 );
 
-clientRouter.delete(
-  "/:id",
-  authorize(["Admin"]),
-  async (req: Request, res: Response) => {
-    const clientId = req.params.id;
-    const client = await deleteClientById(clientId);
-    if (!client) return res.status(404).send("Client tidak ditemukan!");
-    return res.status(200).send("Client berhasil dihapus");
-  }
-);
+clientRouter.delete("/:id", authorize(["Admin"]), async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await deleteClientById(id);
+  return res.status(result.code).send(result);
+});

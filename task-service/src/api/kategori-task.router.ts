@@ -17,54 +17,37 @@ import { BoardSchema, boardSchema } from "../schema/board.schema";
 
 export const kategoriTaskRouter = Router();
 
-kategoriTaskRouter.post(
-  "/",
-  validate(kategoriTaskCreate),
-  async (req: Request, res: Response) => {
-    const payload = req.body as KategoriTaskCreate;
-    const kategoriTask = await createKategoriTask(payload);
-    if (!kategoriTask)
-      return res.status(400).send("Kategori task gagal dibuat!");
-    return res.status(201).send("Kategori task berhasil dibuat");
-  }
-);
-
-kategoriTaskRouter.get("/:id", async (req: Request, res: Response) => {
-  const kategoriTaskId = req.params.id;
-  const kategoriTask = await getKategoriTaskByProjectId(kategoriTaskId);
-  if (!kategoriTask)
-    return res.status(404).send("Kategori task tidak ditemukan!");
-  return res.status(200).send(kategoriTask);
+kategoriTaskRouter.post("/", validate(kategoriTaskCreate), async (req: Request, res: Response) => {
+  const payload = req.body as KategoriTaskCreate;
+  const result = await createKategoriTask(payload);
+  return res.status(result.code).send(result);
 });
 
-kategoriTaskRouter.patch(
-  "/swap",
-  validate(boardSchema),
-  async (req: Request, res: Response) => {
-    const board = req.body as BoardSchema;
-    const swap = await swapKategoriTask(board);
-    if (!swap) return res.status(400).send("Kategori task gagal diupdate!");
-    return res.status(200).send("Kategori task berhasil diupdate");
-  }
-);
+kategoriTaskRouter.get("/:id", async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await getKategoriTaskByProjectId(id);
+  return res.status(result.code).send(result);
+});
+
+kategoriTaskRouter.patch("/swap", validate(boardSchema), async (req: Request, res: Response) => {
+  const payload = req.body as BoardSchema;
+  const result = await swapKategoriTask(payload);
+  return res.status(result.code).send(result);
+});
 
 kategoriTaskRouter.patch(
   "/:id",
   validate(kategoriTaskUpdate),
   async (req: Request, res: Response) => {
-    const kategoriTaskId = req.params.id;
+    const id = req.params.id;
     const payload = req.body as KategoriTaskUpdate;
-    const kategoriTask = await updateKategoriTaskById(kategoriTaskId, payload);
-    if (!kategoriTask)
-      return res.status(400).send("Kategori task gagal diupdate!");
-    return res.status(200).send("Kategori task berhasil diupdate");
+    const result = await updateKategoriTaskById(id, payload);
+    return res.status(result.code).send(result);
   }
 );
 
 kategoriTaskRouter.delete("/:id", async (req: Request, res: Response) => {
-  const kategoriTaskId = req.params.id;
-  const kategoriTask = await deleteKategoriTaskById(kategoriTaskId);
-  if (!kategoriTask)
-    return res.status(404).send("Kategori task tidak ditemukan!");
-  return res.status(200).send("Kategori task berhasil dihapus");
+  const id = req.params.id;
+  const result = await deleteKategoriTaskById(id);
+  return res.status(result.code).send(result);
 });

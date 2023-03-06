@@ -1,13 +1,9 @@
 import { z } from "zod";
-import { User as U, Role } from "@prisma/client";
+import { User, Role } from "@prisma/client";
 
 export const userCreate = z
   .object({
-    namaLengkap: z
-      .string()
-      .min(1)
-      .max(60)
-      .regex(/^[a-zA-Z .,]+$/),
+    namaLengkap: z.string().min(1).max(60),
     username: z
       .string()
       .min(4)
@@ -26,6 +22,7 @@ export const userUpdate = userCreate.omit({ password: true }).extend({
 
 export type UserCreate = z.infer<typeof userCreate>;
 export type UserUpdate = z.infer<typeof userUpdate>;
-
-type User = Omit<U, "password" | "roleId" | "refreshToken">;
-export type UserReturn = User & { role: Role | null };
+export type UserReturn = Pick<
+  User,
+  Exclude<keyof User, "password" | "roleId" | "refreshToken">
+> & { role: Role | null };

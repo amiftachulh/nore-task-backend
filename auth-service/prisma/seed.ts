@@ -16,12 +16,12 @@ async function main() {
 
   await prisma.user.create({
     data: {
-      nama_lengkap: "Admin",
+      namaLengkap: "Admin",
       username: "admin",
       password: hashedPassword,
-      nomor_hp: "6289874658371",
+      nomorHp: "6289874658371",
       divisi: "Admin",
-      role_id: 1,
+      roleId: 1,
     },
   });
 

@@ -1,38 +1,26 @@
 import { prisma } from "../db/client";
 import { Komentar } from "@prisma/client";
-import {
-  KomentarCreate,
-  KomentarReturn,
-  KomentarUpdate,
-} from "../schema/komentar.schema";
-import { ResponseService } from "../types";
+import { KomentarCreate, KomentarReturn, KomentarUpdate } from "../schema/komentar.schema";
+import { ResponseService, User } from "../types";
 import axios from "axios";
 import config from "../config";
+import { makeResponse } from "../utils";
 
 export async function createKomentar(
   userId: string,
   payload: KomentarCreate
-): Promise<ResponseService<Komentar | null>> {
+): Promise<ResponseService<null>> {
   try {
-    const createdAt = new Date().toISOString();
-    const komentar = await prisma.komentar.create({
+    await prisma.komentar.create({
       data: {
         ...payload,
         userId,
-        createdAt,
+        createdAt: new Date().toISOString(),
       },
     });
-    return {
-      code: 201,
-      data: komentar,
-      err: null,
-    };
+    return makeResponse(201, "Komentar berhasil dibuat", null);
   } catch (error) {
-    return {
-      code: 400,
-      data: null,
-      err: "Komentar gagal dibuat!",
-    };
+    return makeResponse(400, "Komentar gagal dibuat", null);
   }
 }
 
@@ -40,21 +28,15 @@ export async function getKomentarByTaskId(
   taskId: string
 ): Promise<ResponseService<KomentarReturn[] | null>> {
   const komentar = await prisma.komentar.findMany({
-    where: { taskId: taskId },
+    where: { taskId },
     orderBy: { createdAt: "asc" },
   });
-  if (!komentar.length) {
-    return {
-      code: 404,
-      data: null,
-      err: "Tidak ada komentar di task ini!",
-    };
-  }
+
+  if (!komentar.length) return makeResponse(404, "Tidak ada komentar di task ini", null);
+
   try {
-    const promises = komentar.map(async k => {
-      const response = await axios.get(
-        `${config.api.auth}/event/user/${k.userId}`
-      );
+    const promises = komentar.map(async (k) => {
+      const response = await axios.get(`${config.api.auth}/event/user/${k.userId}`);
       const { userId, ...data } = k;
       return {
         ...data,
@@ -65,17 +47,9 @@ export async function getKomentarByTaskId(
       };
     });
     const result = await Promise.all(promises);
-    return {
-      code: 200,
-      data: result,
-      err: null,
-    };
+    return makeResponse(200, "Success", result);
   } catch (error) {
-    return {
-      code: 502,
-      data: null,
-      err: "Tidak bisa mencapai auth service!",
-    };
+    return makeResponse(500, "Terjadi kesalahan, silakan coba lagi nanti", null);
   }
 }
 
@@ -83,37 +57,45 @@ export async function updateKomentarById(
   id: string,
   userId: string,
   payload: KomentarUpdate
-): Promise<Komentar | null> {
+): Promise<ResponseService<null>> {
   const komentar = await prisma.komentar.findUnique({
-    where: { id: id },
+    where: { id },
   });
-  if (!komentar) return null;
-  if (userId !== komentar.userId) return null;
+
+  if (!komentar) return makeResponse(404, "Komentar tidak ditemukan", null);
+  if (userId !== komentar.userId)
+    return makeResponse(401, "Anda tidak bisa mengedit komentar ini", null);
+
   try {
-    const updatedAt = new Date().toISOString();
-    return await prisma.komentar.update({
+    await prisma.komentar.update({
       where: { id: id },
-      data: { ...payload, updatedAt },
+      data: {
+        ...payload,
+        updatedAt: new Date().toISOString(),
+      },
     });
+    return makeResponse(200, "Komentar berhasil diperbarui", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "Komentar gagal diperbarui", null);
   }
 }
 
-export async function deleteKomentarById(
-  id: string,
-  userId: string
-): Promise<Komentar | null> {
+export async function deleteKomentarById(id: string, user: User): Promise<ResponseService<null>> {
   const komentar = await prisma.komentar.findUnique({
-    where: { id: id },
+    where: { id },
   });
-  if (!komentar) return null;
-  if (userId !== komentar.userId) return null;
-  try {
-    return await prisma.komentar.delete({
-      where: { id: id },
-    });
-  } catch (error) {
-    return null;
+
+  if (!komentar) return makeResponse(404, "Komentar tidak ditemukan", null);
+
+  if (user.role?.nama === "Admin" || user.id === komentar.userId) {
+    try {
+      await prisma.komentar.delete({
+        where: { id },
+      });
+      return makeResponse(200, "Komentar berhasil dihapus", null);
+    } catch (error) {
+      return makeResponse(400, "Komentar gagal dihapus", null);
+    }
   }
+  return makeResponse(401, "Anda tidak bisa menghapus komentar ini", null);
 }

@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Client {
-  id         String    @id @default(uuid())
+  id         String    @id @default(uuid()) @db.VarChar(36)
   nama       String    @db.VarChar(60)
   perusahaan String?
   alamat     String?
@@ -22,12 +22,12 @@ model Client {
 }
 
 model Project {
-  id           String  @id @default(uuid())
+  id           String  @id @default(uuid()) @db.VarChar(36)
   nama         String
-  client       Client? @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  clientId     String? @map("client_id")
+  client       Client? @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  clientId     String? @map("client_id") @db.VarChar(36)
   jenisLayanan String  @map("jenis_layanan")
-  keterangan   String? @db.TinyText
+  keterangan   String? @db.Text
 
   @@map("project")
 }

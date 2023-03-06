@@ -3,17 +3,23 @@ import { Subtask } from "@prisma/client";
 import { SubtaskReturn, SubtaskSchema } from "../schema/subtask.schema";
 import config from "../config";
 import axios from "axios";
+import { ResponseService } from "../types";
+import { makeResponse } from "../utils";
 
-export async function createSubtask(
-  payload: SubtaskSchema
-): Promise<Subtask | null> {
+export async function createSubtask(payload: SubtaskSchema): Promise<ResponseService<null>> {
   try {
     await axios.get(`${config.api.auth}/event/user/${payload.userId}`);
-    return await prisma.subtask.create({
+  } catch (error) {
+    return makeResponse(500, "Terjadi kesalahan, silakan coba lagi nanti", null);
+  }
+
+  try {
+    await prisma.subtask.create({
       data: payload,
     });
+    return makeResponse(201, "Subtask berhasil dibuat", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "Subtask gagal dibuat", null);
   }
 }
 
@@ -23,48 +29,57 @@ const subtaskReturn = {
   userId: true,
   keterangan: true,
   poin: true,
+  labelSubtask: true,
 };
 
 export async function getSubtaskById(
-  subtaskId: string
-): Promise<SubtaskReturn | null> {
-  return await prisma.subtask.findUnique({
-    where: { id: subtaskId },
+  taskId: string
+): Promise<ResponseService<SubtaskReturn[] | null>> {
+  const subtask = await prisma.subtask.findMany({
+    where: { taskId: taskId },
     select: subtaskReturn,
   });
+
+  if (!subtask.length) return makeResponse(400, "Subtask tidak ditemukan", null);
+  return makeResponse(200, "Success", subtask);
 }
 
 export async function updateSubtaskById(
   subtaskId: string,
   payload: SubtaskSchema
-): Promise<Subtask | null> {
+): Promise<ResponseService<null>> {
   try {
     await axios.get(`${config.api.auth}/event/user/${payload.userId}`);
-    return await prisma.subtask.update({
+  } catch (error) {
+    return makeResponse(500, "Terjadi kesalahan, silakan coba lagi nanti", null);
+  }
+
+  try {
+    await prisma.subtask.update({
       where: { id: subtaskId },
       data: payload,
     });
+    return makeResponse(200, "Subtask berhasil diperbarui", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "Subtask gagal diperbarui", null);
   }
 }
 
-export async function deleteSubtaskById(
-  subtaskId: string
-): Promise<Subtask | null> {
+export async function deleteSubtaskById(subtaskId: string): Promise<ResponseService<null>> {
   try {
-    return await prisma.subtask.delete({
+    await prisma.subtask.delete({
       where: { id: subtaskId },
     });
+    return makeResponse(200, "Subtask berhasil dihapus", null);
   } catch (error) {
-    return null;
+    return makeResponse(400, "Subtask gagal dihapus", null);
   }
 }
 
 export async function setNullSubtaskByUserId(userId: string): Promise<boolean> {
   try {
     await prisma.subtask.updateMany({
-      where: { userId: userId },
+      where: { userId },
       data: { userId: null },
     });
     return true;

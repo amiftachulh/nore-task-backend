@@ -1,4 +1,5 @@
 import { Router, Request, Response } from "express";
+import { validate } from "./middleware";
 import { BoardSchema, boardSchema } from "../schema/board.schema";
 import { taskSchema, TaskSchema } from "../schema/task.schema";
 import {
@@ -8,54 +9,36 @@ import {
   deleteTaskById,
   swapTask,
 } from "../service/task.service";
-import { validate } from "./middleware";
 
 export const taskRouter = Router();
 
-taskRouter.post(
-  "/",
-  validate(taskSchema),
-  async (req: Request, res: Response) => {
-    const payload = req.body as TaskSchema;
-    const task = await createTask(payload);
-    if (!task) return res.status(400).send("Task gagal dibuat!");
-    return res.status(201).send("Task berhasil dibuat");
-  }
-);
-
-taskRouter.get("/:id", async (req: Request, res: Response) => {
-  const taskId = req.params.id;
-  const task = await getTaskById(taskId);
-  if (!task) return res.status(404).send("Task tidak ditemukan");
-  return res.status(200).send(task);
+taskRouter.post("/", validate(taskSchema), async (req: Request, res: Response) => {
+  const payload = req.body as TaskSchema;
+  const result = await createTask(payload);
+  return res.status(result.code).send(result);
 });
 
-taskRouter.patch(
-  "/swap",
-  validate(boardSchema),
-  async (req: Request, res: Response) => {
-    const board = req.body as BoardSchema;
-    const swap = await swapTask(board);
-    if (!swap) return res.status(400).send("Task gagal diupdate!");
-    return res.status(200).send("Task berhasil diupdate");
-  }
-);
+taskRouter.get("/:id", async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await getTaskById(id);
+  return res.status(result.code).send(result);
+});
 
-taskRouter.patch(
-  "/:id",
-  validate(taskSchema),
-  async (req: Request, res: Response) => {
-    const taskId = req.params.id;
-    const payload = req.body as TaskSchema;
-    const task = await updateTaskById(taskId, payload);
-    if (!task) return res.status(400).send("Task gagal diupdate");
-    return res.status(200).send("Task berhasil diupdate");
-  }
-);
+taskRouter.patch("/swap", validate(boardSchema), async (req: Request, res: Response) => {
+  const payload = req.body as BoardSchema;
+  const result = await swapTask(payload);
+  return res.status(result.code).send(result);
+});
+
+taskRouter.patch("/:id", validate(taskSchema), async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const payload = req.body as TaskSchema;
+  const result = await updateTaskById(id, payload);
+  return res.status(result.code).send(result);
+});
 
 taskRouter.delete("/:id", async (req: Request, res: Response) => {
-  const taskId = req.params.id;
-  const task = await deleteTaskById(taskId);
-  if (!task) return res.status(404).send("Task tidak ditemukan!");
-  return res.status(200).send("Task berhasil dihapus");
+  const id = req.params.id;
+  const result = await deleteTaskById(id);
+  return res.status(result.code).send(result);
 });

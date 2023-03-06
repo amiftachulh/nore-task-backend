@@ -2,66 +2,55 @@ import { Router, Request, Response } from "express";
 import { authenticate, AuthorizedRequest, validate } from "./middleware";
 import { LoginSchema, loginSchema } from "../schema/auth.schema";
 import { userCreate, UserCreate } from "../schema/user.schema";
-import {
-  deleteRefreshToken,
-  getAccess,
-  getNewAccessToken,
-} from "../service/auth.service";
-import { registerUser } from "../service/user.service";
+import { deleteRefreshToken, login, getNewAccessToken } from "../service/auth.service";
+import { register } from "../service/user.service";
+import { makeResponse } from "../utils";
 
 export const authRouter = Router();
 
-authRouter.get(
-  "/verify",
-  authenticate(),
-  async (req: Request, res: Response) => {
-    const user = (req as AuthorizedRequest).user;
-    return res.status(200).send(user);
-  }
-);
+authRouter.get("/verify", authenticate(), async (req: Request, res: Response) => {
+  const user = (req as AuthorizedRequest).user;
+  return res.status(200).send(makeResponse(200, "Verifikasi berhasil", user));
+});
 
-authRouter.post(
-  "/register",
-  validate(userCreate),
-  async (req: Request, res: Response) => {
-    const payload = req.body as UserCreate;
-    const result = await registerUser(payload);
-    if (!result) return res.status(409).send("Username sudah diambil!");
-    return res.status(201).send("Berhasil mendaftar");
-  }
-);
+authRouter.post("/register", validate(userCreate), async (req: Request, res: Response) => {
+  const payload = req.body as UserCreate;
+  const result = await register(payload);
+  return res.status(result.code).send(result);
+});
 
-authRouter.post(
-  "/login",
-  validate(loginSchema),
-  async (req: Request, res: Response) => {
-    const payload = req.body as LoginSchema;
-    const user = await getAccess(payload);
-    if (!user) return res.sendStatus(401);
-    res.cookie("refreshToken", user.refreshToken, {
+authRouter.post("/login", validate(loginSchema), async (req: Request, res: Response) => {
+  const payload = req.body as LoginSchema;
+  const result = await login(payload);
+  if (result.data.refreshToken) {
+    res.cookie("refreshToken", result.data.refreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
       sameSite: "none",
-      secure: true,
+      // secure: true,
     });
-    delete user.refreshToken;
-    return res.status(200).send(user);
+    delete result.data.refreshToken;
   }
-);
+  return res.status(result.code).send(result);
+});
 
 authRouter.get("/refresh", async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) return res.sendStatus(401);
-  const user = await getNewAccessToken(refreshToken);
-  if (!user) return res.sendStatus(403);
-  return res.status(200).send(user);
+  if (!refreshToken)
+    return res
+      .status(401)
+      .send(makeResponse(401, "Session Anda telah berakhir, silakan login kembali!", null));
+  const result = await getNewAccessToken(refreshToken);
+  return res.status(result.code).send(result);
 });
 
 authRouter.delete("/logout", async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) return res.sendStatus(400);
-  const user = await deleteRefreshToken(refreshToken);
+  if (!refreshToken)
+    return res
+      .status(401)
+      .send(makeResponse(401, "Session Anda telah berakhir, silakan login kembali!", null));
+  const result = await deleteRefreshToken(refreshToken);
   res.clearCookie("refreshToken");
-  if (!user) return res.status(404).send("User tidak ditemukan!");
-  return res.status(200).send("Berhasil logout");
+  return res.status(result.code).send(result);
 });

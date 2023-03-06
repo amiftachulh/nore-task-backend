@@ -12,45 +12,32 @@ import {
 
 export const roleRouter = Router();
 
-roleRouter.post(
-  "/",
-  validate(roleSchema),
-  async (req: Request, res: Response) => {
-    const payload = req.body as Role;
-    const role = await createRole(payload);
-    if (!role) return res.status(409).send("ID atau Nama Role sudah ada!");
-    return res.status(201).send("Role berhasil dibuat");
-  }
-);
+roleRouter.post("/", validate(roleSchema), async (req: Request, res: Response) => {
+  const payload = req.body as Role;
+  const result = await createRole(payload);
+  return res.status(result.code).send(result);
+});
 
 roleRouter.get("/", async (req: Request, res: Response) => {
-  const roles = await getAllRoles();
-  if (!roles) return res.status(404).send("Role tidak ditemukan!");
-  return res.status(200).send(roles);
+  const result = await getAllRoles();
+  return res.status(result.code).send(result);
 });
 
 roleRouter.get("/:id", async (req: Request, res: Response) => {
-  const roleId = parseInt(req.params.id);
-  const role = await getRoleById(roleId);
-  if (!role) return res.status(404).send("Role tidak ditemukan!");
-  return res.status(200).send(role);
+  const id = parseInt(req.params.id);
+  const result = await getRoleById(id);
+  return res.status(result.code).send(result);
 });
 
-roleRouter.patch(
-  "/:id",
-  validate(roleSchema),
-  async (req: Request, res: Response) => {
-    const roleId = parseInt(req.params.id);
-    const payload = req.body as Role;
-    const role = await updateRoleById(roleId, payload);
-    if (!role) return res.status(404).send("Role tidak ditemukan!");
-    return res.status(200).send("Role berhasil diupdate");
-  }
-);
+roleRouter.patch("/:id", validate(roleSchema), async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  const payload = req.body as Role;
+  const result = await updateRoleById(id, payload);
+  return res.status(result.code).send(result);
+});
 
 roleRouter.delete("/:id", async (req: Request, res: Response) => {
-  const roleId = parseInt(req.params.id);
-  const role = await deleteRoleById(roleId);
-  if (!role) return res.status(404).send("Role tidak ditemukan!");
-  return res.status(200).send("Role berhasil dihapus");
+  const id = parseInt(req.params.id);
+  const result = await deleteRoleById(id);
+  return res.status(result.code).send(result);
 });

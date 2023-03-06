@@ -11,45 +11,32 @@ import {
 
 export const projectRouter = Router();
 
-projectRouter.post(
-  "/",
-  validate(projectSchema),
-  async (req: Request, res: Response) => {
-    const payload = req.body as ProjectSchema;
-    const project = await createProject(payload);
-    if (!project) return res.status(400).send("Project gagal dibuat!");
-    return res.status(201).send("Project berhasil dibuat");
-  }
-);
+projectRouter.post("/", validate(projectSchema), async (req: Request, res: Response) => {
+  const payload = req.body as ProjectSchema;
+  const result = await createProject(payload);
+  return res.status(result.code).send(result);
+});
 
 projectRouter.get("/", async (req: Request, res: Response) => {
-  const projects = await getAllProjects();
-  if (!projects) return res.status(404).send("Project tidak ditemukan!");
-  return res.status(200).send(projects);
+  const result = await getAllProjects();
+  return res.status(result.code).send(result);
 });
 
 projectRouter.get("/:id", async (req: Request, res: Response) => {
-  const projectId = req.params.id;
-  const project = await getProjectById(projectId);
-  if (!project) return res.status(404).send("Project tidak ditemukan!");
-  return res.status(200).send(project);
+  const id = req.params.id;
+  const result = await getProjectById(id);
+  return res.status(result.code).send(result);
 });
 
-projectRouter.patch(
-  "/:id",
-  validate(projectSchema),
-  async (req: Request, res: Response) => {
-    const projectId = req.params.id;
-    const payload = req.body as ProjectSchema;
-    const project = await updateProjectById(projectId, payload);
-    if (!project) return res.status(400).send("Project gagal diupdate!");
-    return res.status(200).send("Project berhasil diupdate");
-  }
-);
+projectRouter.patch("/:id", validate(projectSchema), async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const payload = req.body as ProjectSchema;
+  const result = await updateProjectById(id, payload);
+  return res.status(result.code).send(result);
+});
 
 projectRouter.delete("/:id", async (req: Request, res: Response) => {
-  const projectId = req.params.id;
-  const project = await deleteProjectById(projectId);
-  if (!project) return res.status(404).send("Project tidak ditemukan!");
-  return res.status(200).send("Project berhasil dihapus");
+  const id = req.params.id;
+  const result = await deleteProjectById(id);
+  return res.status(result.code).send(result);
 });

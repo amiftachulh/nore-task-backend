@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Task, Subtask as S } from "@prisma/client";
+import { Task, Subtask, LabelSubtask } from "@prisma/client";
 
 export const subtaskSchema = z
   .object({
@@ -11,6 +11,7 @@ export const subtaskSchema = z
   .strict();
 
 export type SubtaskSchema = z.infer<typeof subtaskSchema>;
-
-type Subtask = Omit<S, "taskId">;
-export type SubtaskReturn = Subtask & { task: Task };
+export type SubtaskReturn = Pick<Subtask, Exclude<keyof Subtask, "taskId">> & {
+  task: Task;
+  labelSubtask: LabelSubtask[];
+};
