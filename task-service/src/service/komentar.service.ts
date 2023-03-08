@@ -1,5 +1,4 @@
 import { prisma } from "../db/client";
-import { Komentar } from "@prisma/client";
 import { KomentarCreate, KomentarReturn, KomentarUpdate } from "../schema/komentar.schema";
 import { ResponseService, User } from "../types";
 import axios from "axios";
@@ -41,8 +40,8 @@ export async function getKomentarByTaskId(
       return {
         ...data,
         user: {
-          id: response.data.id,
-          namaLengkap: response.data.namaLengkap,
+          id: response.data.data.id,
+          namaLengkap: response.data.data.namaLengkap,
         },
       };
     });

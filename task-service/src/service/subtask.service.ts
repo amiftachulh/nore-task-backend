@@ -1,5 +1,4 @@
 import { prisma } from "../db/client";
-import { Subtask } from "@prisma/client";
 import { SubtaskReturn, SubtaskSchema } from "../schema/subtask.schema";
 import config from "../config";
 import axios from "axios";

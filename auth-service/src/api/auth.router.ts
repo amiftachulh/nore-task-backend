@@ -22,12 +22,12 @@ authRouter.post("/register", validate(userCreate), async (req: Request, res: Res
 authRouter.post("/login", validate(loginSchema), async (req: Request, res: Response) => {
   const payload = req.body as LoginSchema;
   const result = await login(payload);
-  if (result.data.refreshToken) {
+  if (result.data) {
     res.cookie("refreshToken", result.data.refreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
       sameSite: "none",
-      // secure: true,
+      secure: true,
     });
     delete result.data.refreshToken;
   }

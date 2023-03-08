@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   db:
-    image: mysql:latest
+    image: mysql
     container_name: mysql
     restart: always
     environment:
@@ -10,7 +10,7 @@ services:
       MYSQL_ROOT_PASSWORD: rahasia123
       MYSQL_PASSWORD: rahasia123
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
       - app-network
 

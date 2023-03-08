@@ -1,5 +1,4 @@
 import { prisma } from "../db/client";
-import { Task } from "@prisma/client";
 import { BoardSchema } from "../schema/board.schema";
 import { TaskReturn, TaskSchema } from "../schema/task.schema";
 import { ResponseService } from "../types";
