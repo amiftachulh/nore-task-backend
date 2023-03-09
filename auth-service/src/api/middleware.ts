@@ -3,7 +3,7 @@ import { prisma } from "../db/client";
 import config from "../config";
 import jwt from "jsonwebtoken";
 import { AnyZodObject } from "zod";
-import { ChangePasswordSchema, jwtPayloadSchema } from "../schema/auth.schema";
+import { jwtPayloadSchema } from "../schema/auth.schema";
 import { UserReturn } from "../schema/user.schema";
 import { makeResponse } from "../utils";
 
@@ -76,14 +76,5 @@ export function authorize(roles: string[]) {
     const user = (req as AuthorizedRequest).user;
     if (user.role !== null && roles.includes(user.role.nama)) return next();
     return res.status(403).send(makeResponse(403, "Anda tidak berhak mengakses ini", null));
-  };
-}
-
-export function changePasswordAuth() {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const payload = req.body as ChangePasswordSchema;
-    const user = (req as AuthorizedRequest).user;
-    if (user.role && user.id === payload.id) return next();
-    return res.sendStatus(401);
   };
 }

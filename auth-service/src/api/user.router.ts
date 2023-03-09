@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { UserUpdate, userUpdate } from "../schema/user.schema";
-import { authorize, changePasswordAuth, validate } from "./middleware";
+import { authorize, AuthorizedRequest, validate } from "./middleware";
 import {
   getAllUsers,
   getUserById,
@@ -26,10 +26,10 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
 userRouter.patch(
   "/change-password",
   validate(changePasswordSchema),
-  changePasswordAuth(),
   async (req: Request, res: Response) => {
+    const user = (req as AuthorizedRequest).user;
     const payload = req.body as ChangePasswordSchema;
-    const result = await updatePassword(payload);
+    const result = await updatePassword(user, payload);
     return res.status(result.code).send(result);
   }
 );

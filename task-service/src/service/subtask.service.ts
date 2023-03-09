@@ -35,12 +35,33 @@ export async function getSubtaskById(
   taskId: string
 ): Promise<ResponseService<SubtaskReturn[] | null>> {
   const subtask = await prisma.subtask.findMany({
-    where: { taskId: taskId },
-    select: subtaskReturn,
+    where: { taskId },
+    include: { labelSubtask: true },
   });
 
   if (!subtask.length) return makeResponse(400, "Subtask tidak ditemukan", null);
-  return makeResponse(200, "Success", subtask);
+
+  const promises = subtask.map(async (st) => {
+    try {
+      const response = await axios.get(`${config.api.auth}/event/user/${st.userId}`);
+      const { userId, ...data } = st;
+      return {
+        ...data,
+        user: {
+          id: response.data.data.id,
+          namaLengkap: response.data.data.namaLengkap,
+        },
+      };
+    } catch (error) {
+      const { userId, ...data } = st;
+      return {
+        ...data,
+        user: null,
+      };
+    }
+  });
+  const result = await Promise.all(promises);
+  return makeResponse(200, "Success", result);
 }
 
 export async function updateSubtaskById(

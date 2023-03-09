@@ -81,14 +81,17 @@ export async function updateUserById(
 }
 
 export async function updatePassword(
+  userReturn: UserReturn,
   payload: ChangePasswordSchema
 ): Promise<ResponseService<null>> {
-  const { id, currentPassword, newPassword, confirmNewPassword } = payload;
+  const { currentPassword, newPassword, confirmNewPassword } = payload;
+
+  const userId = userReturn.id;
   const user = await prisma.user.findUnique({
-    where: { id: id },
+    where: { id: userId },
   });
 
-  if (!user) return makeResponse(404, "User tidak ditemukan", null);
+  if (!user) return makeResponse(401, "User tidak ditemukan", null);
 
   const compare = await bcrypt.compare(currentPassword, user.password);
   if (!compare) return makeResponse(400, "Password lama yang Anda masukkan salah", null);
@@ -98,7 +101,7 @@ export async function updatePassword(
   try {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await prisma.user.update({
-      where: { id: id },
+      where: { id: userId },
       data: { password: hashedPassword },
     });
 
