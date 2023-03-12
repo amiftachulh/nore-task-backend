@@ -13,24 +13,24 @@ export const subtaskRouter = Router();
 subtaskRouter.post("/", validate(subtaskSchema), async (req: Request, res: Response) => {
   const payload = req.body as SubtaskSchema;
   const result = await createSubtask(payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 subtaskRouter.get("/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await getSubtaskById(id);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 subtaskRouter.patch("/:id", validate(subtaskSchema), async (req: Request, res: Response) => {
   const id = req.params.id;
   const payload = req.body as SubtaskSchema;
   const result = await updateSubtaskById(id, payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 subtaskRouter.delete("/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await deleteSubtaskById(id);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });

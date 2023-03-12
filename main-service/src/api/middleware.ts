@@ -13,7 +13,7 @@ export function checkDbConnection() {
       return next();
     } catch (error) {
       console.log("Error: Tidak bisa terhubung ke database");
-      return res.status(503).send(makeResponse(503, "Layanan tidak tersedia", null));
+      return res.status(503).json(makeResponse(503, "Layanan tidak tersedia", null));
     }
   };
 }
@@ -24,7 +24,7 @@ export function validate(schema: AnyZodObject) {
       await schema.parseAsync(req.body);
       return next();
     } catch (error) {
-      return res.status(400).send(makeResponse(400, "Kesalahan input", error));
+      return res.status(400).json(makeResponse(400, "Kesalahan input", error));
     }
   };
 }
@@ -40,7 +40,7 @@ export function authenticate() {
       (req as AuthorizedRequest).user = response.data.data;
       return next();
     } catch (error: any) {
-      return res.status(401).send(makeResponse(401, "Token error", error.response.data.data));
+      return res.status(401).json(makeResponse(401, "Token error", error.response.data.data));
     }
   };
 }
@@ -51,6 +51,6 @@ export function authorize(roles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
     const user = (req as AuthorizedRequest).user;
     if (user.role !== null && roles.includes(user.role.nama)) return next();
-    return res.status(403).send(makeResponse(403, "Anda tidak berhak mengakses ini", null));
+    return res.status(403).json(makeResponse(403, "Anda tidak berhak mengakses ini", null));
   };
 }

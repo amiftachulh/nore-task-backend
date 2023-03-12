@@ -6,5 +6,5 @@ export const eventRouter = Router();
 eventRouter.get("/project/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await getProjectById(id);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });

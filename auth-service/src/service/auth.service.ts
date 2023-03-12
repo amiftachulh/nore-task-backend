@@ -1,5 +1,5 @@
 import { prisma } from "../db/client";
-import { jwtPayloadSchema, LoginSchema } from "../schema/auth.schema";
+import { LoginSchema } from "../schema/auth.schema";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import config from "../config";
@@ -75,7 +75,7 @@ export async function getNewAccessToken(refreshToken: string): Promise<ResponseS
 
 export async function deleteRefreshToken(refreshToken: string): Promise<ResponseService<any>> {
   const user = await prisma.user.findFirst({
-    where: { refreshToken: refreshToken },
+    where: { refreshToken },
   });
 
   if (!user) return makeResponse(401, "Logout gagal", null);

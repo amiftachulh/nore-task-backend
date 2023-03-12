@@ -13,7 +13,7 @@ export function checkDbConnection() {
       return next();
     } catch (error) {
       console.log("Error: Tidak bisa terhubung ke database");
-      return res.status(503).send(makeResponse(503, "Layanan tidak tersedia", null));
+      return res.status(503).json(makeResponse(503, "Layanan tidak tersedia", null));
     }
   };
 }
@@ -24,7 +24,7 @@ export function validate(schema: AnyZodObject) {
       await schema.parseAsync(req.body);
       return next();
     } catch (error) {
-      return res.status(400).send(makeResponse(400, "Kesalahan input", error));
+      return res.status(400).json(makeResponse(400, "Kesalahan input", error));
     }
   };
 }
@@ -40,7 +40,7 @@ export function authenticate() {
       (req as AuthorizedRequest).user = response.data.data;
       return next();
     } catch (error: any) {
-      return res.status(401).send(makeResponse(401, "Token error", error.response.data.data));
+      return res.status(401).json(makeResponse(401, "Token error", error.response.data.data));
     }
   };
 }

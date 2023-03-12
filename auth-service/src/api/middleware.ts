@@ -14,7 +14,7 @@ export function checkDbConnection() {
       return next();
     } catch (error) {
       console.log("Error: Tidak bisa terhubung ke database");
-      return res.status(503).send(makeResponse(503, "Layanan tidak tersedia", null));
+      return res.status(503).json(makeResponse(503, "Layanan tidak tersedia", null));
     }
   };
 }
@@ -25,7 +25,7 @@ export function validate(schema: AnyZodObject) {
       await schema.parseAsync(req.body);
       return next();
     } catch (error) {
-      return res.status(400).send(makeResponse(400, "Kesalahan input", error));
+      return res.status(400).json(makeResponse(400, "Kesalahan input", error));
     }
   };
 }
@@ -33,11 +33,11 @@ export function validate(schema: AnyZodObject) {
 export function authenticate() {
   return async (req: Request, res: Response, next: NextFunction) => {
     const header = req.header("Authorization");
-    if (!header) return res.status(401).send(makeResponse(401, "No header authorization", null));
+    if (!header) return res.status(401).json(makeResponse(401, "No header authorization", null));
 
     const token = header.replace("Bearer ", "");
     if (!token)
-      return res.status(401).send(makeResponse(401, "Invalid authorization header!", null));
+      return res.status(401).json(makeResponse(401, "Invalid authorization header!", null));
 
     try {
       const jwtPayload = jwt.verify(token, config.auth.accessToken as string);
@@ -56,7 +56,7 @@ export function authenticate() {
       });
 
       if (!user) {
-        return res.status(404).send(`User with id ${verifiedPayload.id} not found!`);
+        return res.status(401).json(makeResponse(401, "User tidak ditemukan", null));
       }
 
       // attach user to request object
@@ -64,7 +64,7 @@ export function authenticate() {
 
       return next();
     } catch (error: any) {
-      return res.status(401).send(makeResponse(401, "Token error", error));
+      return res.status(401).json(makeResponse(401, "Token error", error));
     }
   };
 }
@@ -75,6 +75,6 @@ export function authorize(roles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
     const user = (req as AuthorizedRequest).user;
     if (user.role !== null && roles.includes(user.role.nama)) return next();
-    return res.status(403).send(makeResponse(403, "Anda tidak berhak mengakses ini", null));
+    return res.status(403).json(makeResponse(403, "Anda tidak berhak mengakses ini", null));
   };
 }

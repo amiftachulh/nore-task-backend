@@ -10,7 +10,7 @@ export const userCreate = z
       .max(30)
       .regex(/^[a-zA-Z0-9._]+$/),
     password: z.string().min(8).max(32),
-    nomorHp: z.string(),
+    nomorHp: z.string().min(8).max(13),
     divisi: z.string().min(2),
   })
   .strict();

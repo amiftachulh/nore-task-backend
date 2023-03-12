@@ -6,9 +6,7 @@ import { eventRouter } from "./event.router";
 
 export const indexRouter = Router();
 
-indexRouter.use(checkDbConnection());
-indexRouter.use(/^(?!.*event).*$/, authenticate());
+indexRouter.use(checkDbConnection(), authenticate());
 
 indexRouter.use("/client", clientRouter);
 indexRouter.use("/project", projectRouter);
-indexRouter.use("/event", eventRouter);

@@ -18,24 +18,24 @@ export const labelTaskRouter = Router();
 labelTaskRouter.post("/", validate(labelTaskCreate), async (req: Request, res: Response) => {
   const payload = req.body as LabelTaskCreate;
   const result = await createLabelTask(payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 labelTaskRouter.get("/:taskId", async (req: Request, res: Response) => {
   const taskId = req.params.taskId;
   const result = await getLabelTaskByTaskId(taskId);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 labelTaskRouter.patch("/:id", validate(labelTaskUpdate), async (req: Request, res: Response) => {
   const id = req.params.id;
   const payload = req.body as LabelTaskUpdate;
   const result = await updateLabelTaskById(id, payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 labelTaskRouter.delete("/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await deleteLabelTaskById(id);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });

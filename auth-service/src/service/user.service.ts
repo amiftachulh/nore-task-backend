@@ -18,6 +18,7 @@ export async function register(payload: UserCreate): Promise<ResponseService<nul
     data: {
       ...payload,
       password: await bcrypt.hash(payload.password, 10),
+      roleId: 3,
     },
   });
 

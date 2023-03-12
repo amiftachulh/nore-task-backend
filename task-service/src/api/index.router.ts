@@ -10,8 +10,7 @@ import { eventRouter } from "./event.router";
 
 export const indexRouter = Router();
 
-indexRouter.use(checkDbConnection());
-indexRouter.use(/^(?!.*event).*$/, authenticate());
+indexRouter.use(checkDbConnection(), authenticate());
 
 indexRouter.use("/kategori-task", kategoriTaskRouter);
 indexRouter.use("/task", taskRouter);
@@ -19,4 +18,3 @@ indexRouter.use("/label-task", labelTaskRouter);
 indexRouter.use("/komentar", komentarRouter);
 indexRouter.use("/subtask", subtaskRouter);
 indexRouter.use("/label-subtask", labelSubtaskRouter);
-indexRouter.use("/event", eventRouter);
