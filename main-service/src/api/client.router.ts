@@ -14,7 +14,7 @@ export const clientRouter = Router();
 clientRouter.post(
   "/",
   validate(clientSchema),
-  authorize(["Admin"]),
+  authorize([1]),
   async (req: Request, res: Response) => {
     const payload = req.body as ClientSchema;
     const result = await createClient(payload);
@@ -22,29 +22,21 @@ clientRouter.post(
   }
 );
 
-clientRouter.get(
-  "/",
-  authorize(["Admin", "Project Manager"]),
-  async (req: Request, res: Response) => {
-    const result = await getAllClients();
-    return res.status(result.code).json(result);
-  }
-);
+clientRouter.get("/", authorize([1, 2]), async (req: Request, res: Response) => {
+  const result = await getAllClients();
+  return res.status(result.code).json(result);
+});
 
-clientRouter.get(
-  "/:id",
-  authorize(["Admin", "Project Manager"]),
-  async (req: Request, res: Response) => {
-    const id = req.params.id;
-    const result = await getClientById(id);
-    return res.status(result.code).json(result);
-  }
-);
+clientRouter.get("/:id", authorize([1, 2]), async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await getClientById(id);
+  return res.status(result.code).json(result);
+});
 
 clientRouter.patch(
   "/:id",
   validate(clientSchema),
-  authorize(["Admin"]),
+  authorize([1]),
   async (req: Request, res: Response) => {
     const id = req.params.id;
     const payload = req.body as ClientSchema;
@@ -53,7 +45,7 @@ clientRouter.patch(
   }
 );
 
-clientRouter.delete("/:id", authorize(["Admin"]), async (req: Request, res: Response) => {
+clientRouter.delete("/:id", authorize([1]), async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await deleteClientById(id);
   return res.status(result.code).json(result);

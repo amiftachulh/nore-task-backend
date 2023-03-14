@@ -71,10 +71,10 @@ export function authenticate() {
 
 export type AuthorizedRequest = Request & { user: UserReturn };
 
-export function authorize(roles: string[]) {
+export function authorize(roleIds: number[]) {
   return (req: Request, res: Response, next: NextFunction) => {
     const user = (req as AuthorizedRequest).user;
-    if (user.role !== null && roles.includes(user.role.nama)) return next();
+    if (user.role !== null && roleIds.includes(user.role.id)) return next();
     return res.status(403).json(makeResponse(403, "Anda tidak berhak mengakses ini", null));
   };
 }

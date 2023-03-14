@@ -41,7 +41,7 @@ userRouter.patch("/:id", validate(userUpdate), async (req: Request, res: Respons
   return res.status(result.code).json(result);
 });
 
-userRouter.delete("/:id", authorize(["Admin"]), async (req: Request, res: Response) => {
+userRouter.delete("/:id", authorize([1]), async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await deleteUserById(id);
   return res.status(result.code).json(result);
