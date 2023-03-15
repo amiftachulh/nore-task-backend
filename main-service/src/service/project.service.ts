@@ -28,6 +28,7 @@ const projectReturn = {
 export async function getAllProjects(): Promise<ResponseService<ProjectReturn[] | null>> {
   const projects = await prisma.project.findMany({
     select: projectReturn,
+    orderBy: { nama: "asc" },
   });
 
   if (!projects.length) return makeResponse(404, "Project tidak ada", null);

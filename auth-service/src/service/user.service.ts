@@ -37,6 +37,7 @@ export const userWithoutPassword = {
 export async function getAllUsers(): Promise<ResponseService<UserReturn[] | null>> {
   const users = await prisma.user.findMany({
     select: userWithoutPassword,
+    orderBy: [{ roleId: "asc" }, { namaLengkap: "asc" }],
   });
 
   if (!users.length) return makeResponse(404, "User tidak ada", null);
