@@ -96,14 +96,11 @@ export async function deleteSubtaskById(subtaskId: string): Promise<ResponseServ
   }
 }
 
-export async function setNullSubtaskByUserId(userId: string): Promise<boolean> {
-  try {
-    await prisma.subtask.updateMany({
-      where: { userId },
-      data: { userId: null },
-    });
-    return true;
-  } catch (error) {
-    return false;
-  }
+export async function setNullSubtaskByUserId(userId: string): Promise<ResponseService<null>> {
+  await prisma.subtask.updateMany({
+    where: { userId },
+    data: { userId: null },
+  });
+
+  return makeResponse(200, "User pada subtask berhasil dibuat null", null);
 }

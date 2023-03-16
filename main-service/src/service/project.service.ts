@@ -63,9 +63,13 @@ export async function updateProjectById(
 }
 
 export async function deleteProjectById(projectId: string): Promise<ResponseService<any>> {
-  await axios
-    .post(`${config.api.task}/event/delete-kategori-task`, { projectIds: [...projectId] })
-    .catch((error) => makeResponse(500, "Terjadi kesalahan, silakan coba lagi nanti", error));
+  try {
+    await axios.post(`${config.api.task}/event/delete-kategori-task`, {
+      projectIds: [...projectId],
+    });
+  } catch (error) {
+    return makeResponse(500, "Terjadi kesalahan, silakan coba lagi nanti", error);
+  }
 
   try {
     await prisma.project.delete({

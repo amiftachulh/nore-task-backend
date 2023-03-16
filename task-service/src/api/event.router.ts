@@ -6,14 +6,12 @@ export const eventRouter = Router();
 
 eventRouter.post("/delete-kategori-task", async (req: Request, res: Response) => {
   const projectIds = req.body.projectIds as string[];
-  const kategoriTask = await deleteKategoriTaskByProjectId(projectIds);
-  if (!kategoriTask) return res.jsonStatus(400);
-  return res.jsonStatus(200);
+  const result = await deleteKategoriTaskByProjectId(projectIds);
+  return res.status(result.code).json(result);
 });
 
 eventRouter.patch("/null-user/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
-  const subtask = await setNullSubtaskByUserId(id);
-  if (!subtask) return res.jsonStatus(400);
-  return res.jsonStatus(200);
+  const result = await setNullSubtaskByUserId(id);
+  return res.status(result.code).json(result);
 });
