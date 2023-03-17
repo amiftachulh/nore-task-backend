@@ -41,7 +41,7 @@ export async function getAllUsers(): Promise<ResponseService<UserReturn[] | null
     orderBy: [{ roleId: "asc" }, { namaLengkap: "asc" }],
   })) as UserReturn[];
 
-  if (!users.length) return makeResponse(404, "User tidak ada", null);
+  if (!users.length) return makeResponse(404, "User tidak ditemukan", null);
   return makeResponse(200, "Success", users);
 }
 
@@ -49,7 +49,7 @@ export async function getUserById(userId: string): Promise<ResponseService<UserR
   const user = (await prisma.user.findUnique({
     where: { id: userId },
     select: userWithoutPassword,
-  })) as UserReturn;
+  })) as UserReturn | null;
 
   if (!user) return makeResponse(404, "User tidak ditemukan", null);
   return makeResponse(200, "Success", user);

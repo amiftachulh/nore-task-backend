@@ -39,7 +39,7 @@ export async function getTaskById(taskId: string): Promise<ResponseService<TaskR
   const task = (await prisma.task.findUnique({
     where: { id: taskId },
     select: taskReturn,
-  })) as TaskReturn;
+  })) as TaskReturn | null;
 
   if (!task) return makeResponse(404, "Task tidak ditemukan", null);
   return makeResponse(200, "Success", task);

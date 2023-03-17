@@ -41,7 +41,7 @@ export async function getProjectById(
   const project = (await prisma.project.findFirst({
     where: { id: projectId },
     select: projectReturn,
-  })) as ProjectReturn;
+  })) as ProjectReturn | null;
 
   if (!project) return makeResponse(404, "Project tidak ditemukan", null);
   return makeResponse(200, "Success", project);

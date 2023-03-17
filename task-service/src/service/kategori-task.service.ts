@@ -39,7 +39,7 @@ export async function createKategoriTask(
   }
 }
 
-export const kategoriTaskReturn: Prisma.KategoriTaskSelect = {
+const kategoriTaskReturn: Prisma.KategoriTaskSelect = {
   id: true,
   nama: true,
   projectId: true,
