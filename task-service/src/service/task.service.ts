@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../db/client";
 import { BoardSchema } from "../schema/board.schema";
 import { TaskReturn, TaskSchema } from "../schema/task.schema";
@@ -24,7 +25,7 @@ export async function createTask(payload: TaskSchema): Promise<ResponseService<n
   }
 }
 
-export const taskReturn = {
+const taskReturn: Prisma.TaskSelect = {
   id: true,
   nama: true,
   kategoriTask: true,
@@ -35,10 +36,10 @@ export const taskReturn = {
 };
 
 export async function getTaskById(taskId: string): Promise<ResponseService<TaskReturn | null>> {
-  const task = await prisma.task.findUnique({
+  const task = (await prisma.task.findUnique({
     where: { id: taskId },
     select: taskReturn,
-  });
+  })) as TaskReturn;
 
   if (!task) return makeResponse(404, "Task tidak ditemukan", null);
   return makeResponse(200, "Success", task);

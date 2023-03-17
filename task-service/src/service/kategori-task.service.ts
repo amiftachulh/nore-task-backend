@@ -9,6 +9,7 @@ import config from "../config";
 import axios from "axios";
 import { ResponseService } from "../types";
 import { makeResponse } from "../utils";
+import { Prisma } from "@prisma/client";
 
 export async function createKategoriTask(
   payload: KategoriTaskCreate
@@ -38,7 +39,7 @@ export async function createKategoriTask(
   }
 }
 
-export const kategoriTaskReturn = {
+export const kategoriTaskReturn: Prisma.KategoriTaskSelect = {
   id: true,
   nama: true,
   projectId: true,
@@ -49,10 +50,10 @@ export const kategoriTaskReturn = {
 export async function getKategoriTaskByProjectId(
   projectId: string
 ): Promise<ResponseService<KategoriTaskReturn[] | null>> {
-  const kategoriTask = await prisma.kategoriTask.findMany({
+  const kategoriTask = (await prisma.kategoriTask.findMany({
     where: { projectId },
     select: kategoriTaskReturn,
-  });
+  })) as KategoriTaskReturn[];
 
   if (!kategoriTask.length)
     return makeResponse(404, "Kategori task di project ini tidak ada", null);

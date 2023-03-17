@@ -22,15 +22,6 @@ export async function createSubtask(payload: SubtaskSchema): Promise<ResponseSer
   }
 }
 
-const subtaskReturn = {
-  id: true,
-  task: true,
-  userId: true,
-  keterangan: true,
-  poin: true,
-  labelSubtask: true,
-};
-
 export async function getSubtaskById(
   taskId: string
 ): Promise<ResponseService<SubtaskReturn[] | null>> {
