@@ -31,7 +31,7 @@ export async function getAllProjects(): Promise<ResponseService<ProjectReturn[] 
     orderBy: { nama: "asc" },
   })) as ProjectReturn[];
 
-  if (!projects.length) return makeResponse(404, "Project tidak ada", null);
+  if (!projects.length) return makeResponse(404, "Project tidak ditemukan", null);
   return makeResponse(200, "Success", projects);
 }
 

@@ -22,7 +22,7 @@ export async function getAllClients(): Promise<ResponseService<Client[] | null>>
     orderBy: { nama: "asc" },
   });
 
-  if (!clients.length) return makeResponse(404, "Client tidak ada", null);
+  if (!clients.length) return makeResponse(404, "Client tidak ditemukan", null);
   return makeResponse(200, "Success", clients);
 }
 

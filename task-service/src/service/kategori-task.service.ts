@@ -56,7 +56,7 @@ export async function getKategoriTaskByProjectId(
   })) as KategoriTaskReturn[];
 
   if (!kategoriTask.length)
-    return makeResponse(404, "Kategori task di project ini tidak ada", null);
+    return makeResponse(404, "Kategori task di project ini tidak ditemukan", null);
   return makeResponse(200, "Success", kategoriTask);
 }
 

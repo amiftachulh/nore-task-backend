@@ -122,6 +122,6 @@ export async function deleteUserById(userId: string): Promise<ResponseService<nu
     });
     return makeResponse(200, "User berhasil dihapus", null);
   } catch (error) {
-    return makeResponse(400, "User gagal dihapus", null);
+    return makeResponse(500, "User gagal dihapus", null);
   }
 }
