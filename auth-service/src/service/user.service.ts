@@ -6,7 +6,6 @@ import axios from "axios";
 import { ChangePasswordSchema } from "../schema/auth.schema";
 import { ResponseService } from "../types";
 import { makeResponse } from "../utils";
-import { Prisma } from "@prisma/client";
 
 export async function register(payload: UserCreate): Promise<ResponseService<null>> {
   const user = await prisma.user.findMany({
@@ -26,7 +25,7 @@ export async function register(payload: UserCreate): Promise<ResponseService<nul
   return makeResponse(201, "Berhasil mendaftar", null);
 }
 
-export const userWithoutPassword: Prisma.UserSelect = {
+export const userWithoutPassword = {
   id: true,
   namaLengkap: true,
   username: true,
@@ -36,20 +35,20 @@ export const userWithoutPassword: Prisma.UserSelect = {
 };
 
 export async function getAllUsers(): Promise<ResponseService<UserReturn[] | null>> {
-  const users = (await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     select: userWithoutPassword,
     orderBy: [{ roleId: "asc" }, { namaLengkap: "asc" }],
-  })) as UserReturn[];
+  });
 
   if (!users.length) return makeResponse(404, "User tidak ditemukan", null);
   return makeResponse(200, "Success", users);
 }
 
 export async function getUserById(userId: string): Promise<ResponseService<UserReturn | null>> {
-  const user = (await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     select: userWithoutPassword,
-  })) as UserReturn | null;
+  });
 
   if (!user) return makeResponse(404, "User tidak ditemukan", null);
   return makeResponse(200, "Success", user);

@@ -1,5 +1,4 @@
 import { prisma } from "../db/client";
-import { Prisma } from "@prisma/client";
 import { ProjectSchema, ProjectReturn } from "../schema/project.schema";
 import axios from "axios";
 import config from "../config";
@@ -17,7 +16,7 @@ export async function createProject(payload: ProjectSchema): Promise<ResponseSer
   }
 }
 
-const projectReturn: Prisma.ProjectSelect = {
+const projectReturn = {
   id: true,
   nama: true,
   client: true,
@@ -26,10 +25,10 @@ const projectReturn: Prisma.ProjectSelect = {
 };
 
 export async function getAllProjects(): Promise<ResponseService<ProjectReturn[] | null>> {
-  const projects = (await prisma.project.findMany({
+  const projects = await prisma.project.findMany({
     select: projectReturn,
     orderBy: { nama: "asc" },
-  })) as ProjectReturn[];
+  });
 
   if (!projects.length) return makeResponse(404, "Project tidak ditemukan", null);
   return makeResponse(200, "Success", projects);
@@ -38,10 +37,10 @@ export async function getAllProjects(): Promise<ResponseService<ProjectReturn[] 
 export async function getProjectById(
   projectId: string
 ): Promise<ResponseService<ProjectReturn | null>> {
-  const project = (await prisma.project.findFirst({
+  const project = await prisma.project.findFirst({
     where: { id: projectId },
     select: projectReturn,
-  })) as ProjectReturn | null;
+  });
 
   if (!project) return makeResponse(404, "Project tidak ditemukan", null);
   return makeResponse(200, "Success", project);
@@ -68,7 +67,7 @@ export async function deleteProjectById(projectId: string): Promise<ResponseServ
       projectIds: [...projectId],
     });
   } catch (error) {
-    return makeResponse(500, "Terjadi kesalahan, silakan coba lagi nanti", error);
+    return makeResponse(500, "Terjadi kesalahan, silakan coba lagi nanti", null);
   }
 
   try {
