@@ -18,6 +18,7 @@ export async function register(payload: UserCreate): Promise<ResponseService<nul
     data: {
       ...payload,
       password: await bcrypt.hash(payload.password, 10),
+      roleId: 3,
     },
   });
 
@@ -36,9 +37,10 @@ export const userWithoutPassword = {
 export async function getAllUsers(): Promise<ResponseService<UserReturn[] | null>> {
   const users = await prisma.user.findMany({
     select: userWithoutPassword,
+    orderBy: [{ roleId: "asc" }, { namaLengkap: "asc" }],
   });
 
-  if (!users.length) return makeResponse(404, "User tidak ada", null);
+  if (!users.length) return makeResponse(404, "User tidak ditemukan", null);
   return makeResponse(200, "Success", users);
 }
 
@@ -81,14 +83,17 @@ export async function updateUserById(
 }
 
 export async function updatePassword(
+  userReturn: UserReturn,
   payload: ChangePasswordSchema
 ): Promise<ResponseService<null>> {
-  const { id, currentPassword, newPassword, confirmNewPassword } = payload;
+  const { currentPassword, newPassword, confirmNewPassword } = payload;
+
+  const userId = userReturn.id;
   const user = await prisma.user.findUnique({
-    where: { id: id },
+    where: { id: userId },
   });
 
-  if (!user) return makeResponse(404, "User tidak ditemukan", null);
+  if (!user) return makeResponse(401, "User tidak ditemukan", null);
 
   const compare = await bcrypt.compare(currentPassword, user.password);
   if (!compare) return makeResponse(400, "Password lama yang Anda masukkan salah", null);
@@ -98,7 +103,7 @@ export async function updatePassword(
   try {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await prisma.user.update({
-      where: { id: id },
+      where: { id: userId },
       data: { password: hashedPassword },
     });
 
@@ -116,6 +121,6 @@ export async function deleteUserById(userId: string): Promise<ResponseService<nu
     });
     return makeResponse(200, "User berhasil dihapus", null);
   } catch (error) {
-    return makeResponse(400, "User gagal dihapus", null);
+    return makeResponse(500, "User gagal dihapus", null);
   }
 }

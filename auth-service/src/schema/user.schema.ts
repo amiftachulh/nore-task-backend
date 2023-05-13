@@ -10,7 +10,7 @@ export const userCreate = z
       .max(30)
       .regex(/^[a-zA-Z0-9._]+$/),
     password: z.string().min(8).max(32),
-    nomorHp: z.string().min(10).max(15),
+    nomorHp: z.string().min(8).max(13),
     divisi: z.string().min(2),
   })
   .strict();
@@ -22,7 +22,6 @@ export const userUpdate = userCreate.omit({ password: true }).extend({
 
 export type UserCreate = z.infer<typeof userCreate>;
 export type UserUpdate = z.infer<typeof userUpdate>;
-export type UserReturn = Pick<
-  User,
-  Exclude<keyof User, "password" | "roleId" | "refreshToken">
-> & { role: Role | null };
+export type UserReturn = Pick<User, Exclude<keyof User, "password" | "roleId" | "refreshToken">> & {
+  role: Role | null;
+};

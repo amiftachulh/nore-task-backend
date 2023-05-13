@@ -38,7 +38,7 @@ export async function createKategoriTask(
   }
 }
 
-export const kategoriTaskReturn = {
+const kategoriTaskReturn = {
   id: true,
   nama: true,
   projectId: true,
@@ -55,7 +55,7 @@ export async function getKategoriTaskByProjectId(
   });
 
   if (!kategoriTask.length)
-    return makeResponse(404, "Kategori task di project ini tidak ada", null);
+    return makeResponse(404, "Kategori task di project ini tidak ditemukan", null);
   return makeResponse(200, "Success", kategoriTask);
 }
 

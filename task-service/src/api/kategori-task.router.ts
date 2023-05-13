@@ -20,19 +20,19 @@ export const kategoriTaskRouter = Router();
 kategoriTaskRouter.post("/", validate(kategoriTaskCreate), async (req: Request, res: Response) => {
   const payload = req.body as KategoriTaskCreate;
   const result = await createKategoriTask(payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 kategoriTaskRouter.get("/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await getKategoriTaskByProjectId(id);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 kategoriTaskRouter.patch("/swap", validate(boardSchema), async (req: Request, res: Response) => {
   const payload = req.body as BoardSchema;
   const result = await swapKategoriTask(payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 kategoriTaskRouter.patch(
@@ -42,12 +42,12 @@ kategoriTaskRouter.patch(
     const id = req.params.id;
     const payload = req.body as KategoriTaskUpdate;
     const result = await updateKategoriTaskById(id, payload);
-    return res.status(result.code).send(result);
+    return res.status(result.code).json(result);
   }
 );
 
 kategoriTaskRouter.delete("/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await deleteKategoriTaskById(id);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });

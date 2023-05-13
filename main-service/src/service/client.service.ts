@@ -18,9 +18,11 @@ export async function createClient(payload: ClientSchema): Promise<ResponseServi
 }
 
 export async function getAllClients(): Promise<ResponseService<Client[] | null>> {
-  const clients = await prisma.client.findMany();
+  const clients = await prisma.client.findMany({
+    orderBy: { nama: "asc" },
+  });
 
-  if (!clients.length) return makeResponse(404, "Client tidak ada", null);
+  if (!clients.length) return makeResponse(404, "Client tidak ditemukan", null);
   return makeResponse(200, "Success", clients);
 }
 

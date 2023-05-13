@@ -24,7 +24,7 @@ export async function getAllRoles(): Promise<ResponseService<Role[] | null>> {
     orderBy: { id: "asc" },
   });
 
-  if (!roles.length) return makeResponse(404, "Role tidak ada", null);
+  if (!roles.length) return makeResponse(404, "Role tidak ditemukan", null);
   return makeResponse(200, "Success", roles);
 }
 

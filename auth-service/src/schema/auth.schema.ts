@@ -17,7 +17,6 @@ export const jwtPayloadSchema = z.object({
 
 export const changePasswordSchema = z
   .object({
-    id: z.string().uuid(),
     currentPassword: z.string().min(8).max(32),
     newPassword: z.string().min(8).max(32),
     confirmNewPassword: z.string().min(8).max(32),

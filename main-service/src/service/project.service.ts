@@ -1,5 +1,4 @@
 import { prisma } from "../db/client";
-import { Project } from "@prisma/client";
 import { ProjectSchema, ProjectReturn } from "../schema/project.schema";
 import axios from "axios";
 import config from "../config";
@@ -28,9 +27,10 @@ const projectReturn = {
 export async function getAllProjects(): Promise<ResponseService<ProjectReturn[] | null>> {
   const projects = await prisma.project.findMany({
     select: projectReturn,
+    orderBy: { nama: "asc" },
   });
 
-  if (!projects.length) return makeResponse(404, "Project tidak ada", null);
+  if (!projects.length) return makeResponse(404, "Project tidak ditemukan", null);
   return makeResponse(200, "Success", projects);
 }
 
@@ -62,9 +62,13 @@ export async function updateProjectById(
 }
 
 export async function deleteProjectById(projectId: string): Promise<ResponseService<any>> {
-  await axios
-    .post(`${config.api.task}/event/delete-kategori-task`, { projectIds: [...projectId] })
-    .catch((error) => makeResponse(500, "Terjadi kesalahan, silakan coba lagi nanti", error));
+  try {
+    await axios.post(`${config.api.task}/event/delete-kategori-task`, {
+      projectIds: [...projectId],
+    });
+  } catch (error) {
+    return makeResponse(500, "Terjadi kesalahan, silakan coba lagi nanti", null);
+  }
 
   try {
     await prisma.project.delete({

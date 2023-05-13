@@ -15,30 +15,30 @@ export const taskRouter = Router();
 taskRouter.post("/", validate(taskSchema), async (req: Request, res: Response) => {
   const payload = req.body as TaskSchema;
   const result = await createTask(payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 taskRouter.get("/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await getTaskById(id);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 taskRouter.patch("/swap", validate(boardSchema), async (req: Request, res: Response) => {
   const payload = req.body as BoardSchema;
   const result = await swapTask(payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 taskRouter.patch("/:id", validate(taskSchema), async (req: Request, res: Response) => {
   const id = req.params.id;
   const payload = req.body as TaskSchema;
   const result = await updateTaskById(id, payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 taskRouter.delete("/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await deleteTaskById(id);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });

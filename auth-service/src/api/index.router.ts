@@ -11,5 +11,5 @@ indexRouter.use(checkDbConnection());
 
 indexRouter.use("/auth", authRouter);
 indexRouter.use("/user", authenticate(), userRouter);
-indexRouter.use("/role", authenticate(), authorize(["Admin"]), roleRouter);
+indexRouter.use("/role", authenticate(), authorize([1]), roleRouter);
 indexRouter.use("/event", eventRouter);

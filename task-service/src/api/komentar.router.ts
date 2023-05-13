@@ -19,13 +19,13 @@ komentarRouter.post("/", validate(komentarCreate), async (req: Request, res: Res
   const user = (req as AuthorizedRequest).user;
   const payload = req.body as KomentarCreate;
   const result = await createKomentar(user.id, payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 komentarRouter.get("/:taskId", async (req: Request, res: Response) => {
   const taskId = req.params.taskId;
   const result = await getKomentarByTaskId(taskId);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 komentarRouter.patch("/:id", validate(komentarUpdate), async (req: Request, res: Response) => {
@@ -33,12 +33,12 @@ komentarRouter.patch("/:id", validate(komentarUpdate), async (req: Request, res:
   const userId = (req as AuthorizedRequest).user.id;
   const payload = req.body as KomentarUpdate;
   const result = await updateKomentarById(id, userId, payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 komentarRouter.delete("/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   const user = (req as AuthorizedRequest).user;
   const result = await deleteKomentarById(id, user);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });

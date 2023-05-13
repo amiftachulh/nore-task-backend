@@ -10,13 +10,8 @@ app.use(json({ strict: false }));
 
 app.use("/api", indexRouter);
 
-const host = config.server.host;
 const port = config.server.port;
 
-app.get("/", async (_: Request, res: Response) =>
-  res.status(200).send("Welcome to Task Service!")
-);
+app.get("/", async (_: Request, res: Response) => res.status(200).send("Welcome to Task Service!"));
 
-app.listen(port, () =>
-  console.log(`Task service is listening to ${host}:${port}`)
-);
+app.listen(port, () => console.log(`Task service is listening to ${port}`));

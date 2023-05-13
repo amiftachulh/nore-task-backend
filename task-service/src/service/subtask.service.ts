@@ -1,5 +1,4 @@
 import { prisma } from "../db/client";
-import { Subtask } from "@prisma/client";
 import { SubtaskReturn, SubtaskSchema } from "../schema/subtask.schema";
 import config from "../config";
 import axios from "axios";
@@ -23,25 +22,37 @@ export async function createSubtask(payload: SubtaskSchema): Promise<ResponseSer
   }
 }
 
-const subtaskReturn = {
-  id: true,
-  task: true,
-  userId: true,
-  keterangan: true,
-  poin: true,
-  labelSubtask: true,
-};
-
 export async function getSubtaskById(
   taskId: string
 ): Promise<ResponseService<SubtaskReturn[] | null>> {
   const subtask = await prisma.subtask.findMany({
-    where: { taskId: taskId },
-    select: subtaskReturn,
+    where: { taskId },
+    include: { labelSubtask: true },
   });
 
   if (!subtask.length) return makeResponse(400, "Subtask tidak ditemukan", null);
-  return makeResponse(200, "Success", subtask);
+
+  const promises = subtask.map(async (st) => {
+    try {
+      const response = await axios.get(`${config.api.auth}/event/user/${st.userId}`);
+      const { userId, ...data } = st;
+      return {
+        ...data,
+        user: {
+          id: response.data.data.id,
+          namaLengkap: response.data.data.namaLengkap,
+        },
+      };
+    } catch (error) {
+      const { userId, ...data } = st;
+      return {
+        ...data,
+        user: null,
+      };
+    }
+  });
+  const result = await Promise.all(promises);
+  return makeResponse(200, "Success", result);
 }
 
 export async function updateSubtaskById(
@@ -76,14 +87,11 @@ export async function deleteSubtaskById(subtaskId: string): Promise<ResponseServ
   }
 }
 
-export async function setNullSubtaskByUserId(userId: string): Promise<boolean> {
-  try {
-    await prisma.subtask.updateMany({
-      where: { userId },
-      data: { userId: null },
-    });
-    return true;
-  } catch (error) {
-    return false;
-  }
+export async function setNullSubtaskByUserId(userId: string): Promise<ResponseService<null>> {
+  await prisma.subtask.updateMany({
+    where: { userId },
+    data: { userId: null },
+  });
+
+  return makeResponse(200, "User pada subtask berhasil dibuat null", null);
 }

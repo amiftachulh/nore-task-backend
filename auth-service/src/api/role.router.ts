@@ -15,29 +15,29 @@ export const roleRouter = Router();
 roleRouter.post("/", validate(roleSchema), async (req: Request, res: Response) => {
   const payload = req.body as Role;
   const result = await createRole(payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 roleRouter.get("/", async (req: Request, res: Response) => {
   const result = await getAllRoles();
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 roleRouter.get("/:id", async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   const result = await getRoleById(id);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 roleRouter.patch("/:id", validate(roleSchema), async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   const payload = req.body as Role;
   const result = await updateRoleById(id, payload);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
 
 roleRouter.delete("/:id", async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   const result = await deleteRoleById(id);
-  return res.status(result.code).send(result);
+  return res.status(result.code).json(result);
 });
